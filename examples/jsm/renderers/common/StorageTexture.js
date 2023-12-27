@@ -1,9 +1,7 @@
-import { Texture, LinearFilter } from 'three';
+import { Texture, LinearFilter } from "three";
 
 class StorageTexture extends Texture {
-
-	constructor( width = 1, height = 1 ) {
-
+	constructor(width = 1, height = 1) {
 		super();
 
 		this.image = { width, height };
@@ -12,9 +10,7 @@ class StorageTexture extends Texture {
 		this.minFilter = LinearFilter;
 
 		this.isStorageTexture = true;
-
 	}
-
 }
 
 export default StorageTexture;

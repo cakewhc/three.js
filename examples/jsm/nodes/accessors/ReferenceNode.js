@@ -1,13 +1,11 @@
-import Node, { addNodeClass } from '../core/Node.js';
-import { NodeUpdateType } from '../core/constants.js';
-import { uniform } from '../core/UniformNode.js';
-import { texture } from './TextureNode.js';
-import { nodeObject } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "../core/Node.js";
+import { NodeUpdateType } from "../core/constants.js";
+import { uniform } from "../core/UniformNode.js";
+import { texture } from "./TextureNode.js";
+import { nodeObject } from "../shadernode/ShaderNode.js";
 
 class ReferenceNode extends Node {
-
-	constructor( property, uniformType, object = null ) {
-
+	constructor(property, uniformType, object = null) {
 		super();
 
 		this.property = property;
@@ -22,81 +20,61 @@ class ReferenceNode extends Node {
 
 		this.updateType = NodeUpdateType.OBJECT;
 
-		this.setNodeType( uniformType );
-
+		this.setNodeType(uniformType);
 	}
 
-	updateReference( frame ) {
-
+	updateReference(frame) {
 		this.reference = this.object !== null ? this.object : frame.object;
 
 		return this.reference;
-
 	}
 
-	setIndex( index ) {
-
+	setIndex(index) {
 		this.index = index;
 
 		return this;
-
 	}
 
 	getIndex() {
-
 		return this.index;
-
 	}
 
-	setNodeType( uniformType ) {
-
+	setNodeType(uniformType) {
 		let node = null;
 
-		if ( uniformType === 'texture' ) {
-
-			node = texture( null );
-
+		if (uniformType === "texture") {
+			node = texture(null);
 		} else {
-
-			node = uniform( uniformType );
-
+			node = uniform(uniformType);
 		}
 
 		this.node = node;
-
 	}
 
-	getNodeType( builder ) {
-
-		return this.node.getNodeType( builder );
-
+	getNodeType(builder) {
+		return this.node.getNodeType(builder);
 	}
 
-	update( /*frame*/ ) {
+	update(/*frame*/) {
+		let value = this.reference[this.property];
 
-		let value = this.reference[ this.property ];
-
-		if ( this.index !== null ) {
-
-			value = value[ this.index ];
-
+		if (this.index !== null) {
+			value = value[this.index];
 		}
 
 		this.node.value = value;
-
 	}
 
-	setup( /*builder*/ ) {
-
+	setup(/*builder*/) {
 		return this.node;
-
 	}
-
 }
 
 export default ReferenceNode;
 
-export const reference = ( name, type, object ) => nodeObject( new ReferenceNode( name, type, object ) );
-export const referenceIndex = ( name, index, type, object ) => nodeObject( new ReferenceNode( name, type, object ).setIndex( index ) );
+export const reference = (name, type, object) =>
+	nodeObject(new ReferenceNode(name, type, object));
+export const referenceIndex = (name, index, type, object) =>
+	nodeObject(new ReferenceNode(name, type, object).setIndex(index));
 
-addNodeClass( 'ReferenceNode', ReferenceNode );
+addNodeClass("ReferenceNode", ReferenceNode);

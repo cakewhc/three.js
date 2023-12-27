@@ -1,99 +1,76 @@
 /* global QUnit */
 
-import { SkeletonHelper } from '../../../../src/helpers/SkeletonHelper.js';
+import { SkeletonHelper } from "../../../../src/helpers/SkeletonHelper.js";
 
-import { LineSegments } from '../../../../src/objects/LineSegments.js';
-import { Bone } from '../../../../src/objects/Bone.js';
+import { LineSegments } from "../../../../src/objects/LineSegments.js";
+import { Bone } from "../../../../src/objects/Bone.js";
 
-export default QUnit.module( 'Helpers', () => {
-
-	QUnit.module( 'SkeletonHelper', () => {
-
+export default QUnit.module("Helpers", () => {
+	QUnit.module("SkeletonHelper", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			const bone = new Bone();
-			const object = new SkeletonHelper( bone );
+			const object = new SkeletonHelper(bone);
 			assert.strictEqual(
-				object instanceof LineSegments, true,
-				'SkeletonHelper extends from LineSegments'
+				object instanceof LineSegments,
+				true,
+				"SkeletonHelper extends from LineSegments"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const bone = new Bone();
-			const object = new SkeletonHelper( bone );
-			assert.ok( object, 'Can instantiate a SkeletonHelper.' );
-
-		} );
+			const object = new SkeletonHelper(bone);
+			assert.ok(object, "Can instantiate a SkeletonHelper.");
+		});
 
 		// PROPERTIES
-		QUnit.test( 'type', ( assert ) => {
-
+		QUnit.test("type", (assert) => {
 			const bone = new Bone();
-			const object = new SkeletonHelper( bone );
+			const object = new SkeletonHelper(bone);
 			assert.ok(
-				object.type === 'SkeletonHelper',
-				'SkeletonHelper.type should be SkeletonHelper'
+				object.type === "SkeletonHelper",
+				"SkeletonHelper.type should be SkeletonHelper"
 			);
+		});
 
-		} );
+		QUnit.todo("root", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		QUnit.todo( 'root', ( assert ) => {
+		QUnit.todo("bones", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-			assert.ok( false, 'everything\'s gonna be alright' );
+		QUnit.todo("matrix", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		} );
-
-		QUnit.todo( 'bones', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-		QUnit.todo( 'matrix', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-		QUnit.todo( 'matrixAutoUpdate', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
+		QUnit.todo("matrixAutoUpdate", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
 		// PUBLIC
-		QUnit.test( 'isSkeletonHelper', ( assert ) => {
-
+		QUnit.test("isSkeletonHelper", (assert) => {
 			const bone = new Bone();
-			const object = new SkeletonHelper( bone );
+			const object = new SkeletonHelper(bone);
 			assert.ok(
 				object.isSkeletonHelper,
-				'SkeletonHelper.isSkeletonHelper should be true'
+				"SkeletonHelper.isSkeletonHelper should be true"
 			);
+		});
 
-		} );
+		QUnit.todo("updateMatrixWorld", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		QUnit.todo( 'updateMatrixWorld', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-		QUnit.test( 'dispose', ( assert ) => {
-
-			assert.expect( 0 );
+		QUnit.test("dispose", (assert) => {
+			assert.expect(0);
 
 			const bone = new Bone();
-			const object = new SkeletonHelper( bone );
+			const object = new SkeletonHelper(bone);
 			object.dispose();
-
-		} );
-
-	} );
-
-} );
+		});
+	});
+});

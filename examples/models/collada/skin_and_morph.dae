@@ -378,7 +378,7 @@ This moves it so 0,0,0 is at the base of the cylinder.
 *******************************************************************************************
 This source contains a list of the SIDs of the 7 joints that will influence the skin.  You
 can also use an IDREF_Array here but use of SIDs is prefered because they allow a controller
-to be used several times with different skeletons.  Applications MUST be able to import either
+to be used several times with different skeletons.  Applications MUST be able to import  either
 IDREF_Array or Name_array tags.  And MUST search the correct namespace for the ID or SID
 *******************************************************************************************
         -->

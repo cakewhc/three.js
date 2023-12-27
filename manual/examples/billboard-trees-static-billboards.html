@@ -1,240 +1,222 @@
 <!-- Licensed under a BSD license. See license.html for license -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Three.js - Billboard Trees Static Billboards</title>
-    <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-    #c {
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
-    </style>
-  </head>
-  <body>
-    <canvas id="c"></canvas>
-  </body>
-<script type="importmap">
-{
-  "imports": {
-    "three": "../../build/three.module.js",
-    "three/addons/": "../../examples/jsm/"
-  }
-}
-</script>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, user-scalable=yes"
+		/>
+		<title>Three.js - Billboard Trees Static Billboards</title>
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+			}
+			#c {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="c"></canvas>
+	</body>
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "../../build/three.module.js",
+				"three/addons/": "../../examples/jsm/"
+			}
+		}
+	</script>
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	<script type="module">
+		import * as THREE from "three";
+		import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-function main() {
+		function main() {
+			const canvas = document.querySelector("#c");
+			const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-	const canvas = document.querySelector( '#c' );
-	const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
+			const fov = 75;
+			const aspect = 2; // the canvas default
+			const near = 0.1;
+			const far = 1000;
+			const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+			camera.position.set(0, 2, 5);
 
-	const fov = 75;
-	const aspect = 2; // the canvas default
-	const near = 0.1;
-	const far = 1000;
-	const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-	camera.position.set( 0, 2, 5 );
+			const controls = new OrbitControls(camera, canvas);
+			controls.target.set(0, 2, 0);
+			controls.minPolarAngle = 0;
+			controls.maxPolarAngle = Math.PI / 2;
+			controls.update();
 
-	const controls = new OrbitControls( camera, canvas );
-	controls.target.set( 0, 2, 0 );
-	controls.minPolarAngle = 0;
-	controls.maxPolarAngle = Math.PI / 2;
-	controls.update();
+			const scene = new THREE.Scene();
 
-	const scene = new THREE.Scene();
+			function addLight(position) {
+				const color = 0xffffff;
+				const intensity = 3;
+				const light = new THREE.DirectionalLight(color, intensity);
+				light.position.set(...position);
+				scene.add(light);
+				scene.add(light.target);
+			}
 
-	function addLight( position ) {
+			addLight([-3, 1, 1]);
+			addLight([2, 1, 0.5]);
 
-		const color = 0xFFFFFF;
-		const intensity = 3;
-		const light = new THREE.DirectionalLight( color, intensity );
-		light.position.set( ...position );
-		scene.add( light );
-		scene.add( light.target );
+			const trunkRadius = 0.2;
+			const trunkHeight = 1;
+			const trunkRadialSegments = 12;
+			const trunkGeometry = new THREE.CylinderGeometry(
+				trunkRadius,
+				trunkRadius,
+				trunkHeight,
+				trunkRadialSegments
+			);
 
-	}
+			const topRadius = trunkRadius * 4;
+			const topHeight = trunkHeight * 2;
+			const topSegments = 12;
+			const topGeometry = new THREE.ConeGeometry(
+				topRadius,
+				topHeight,
+				topSegments
+			);
 
-	addLight( [ - 3, 1, 1 ] );
-	addLight( [ 2, 1, .5 ] );
+			const trunkMaterial = new THREE.MeshPhongMaterial({ color: "brown" });
+			const topMaterial = new THREE.MeshPhongMaterial({ color: "green" });
 
-	const trunkRadius = .2;
-	const trunkHeight = 1;
-	const trunkRadialSegments = 12;
-	const trunkGeometry = new THREE.CylinderGeometry(
-		trunkRadius, trunkRadius, trunkHeight, trunkRadialSegments );
+			function makeTree(x, z) {
+				const root = new THREE.Object3D();
+				const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+				trunk.position.y = trunkHeight / 2;
+				root.add(trunk);
 
-	const topRadius = trunkRadius * 4;
-	const topHeight = trunkHeight * 2;
-	const topSegments = 12;
-	const topGeometry = new THREE.ConeGeometry(
-		topRadius, topHeight, topSegments );
+				const top = new THREE.Mesh(topGeometry, topMaterial);
+				top.position.y = trunkHeight + topHeight / 2;
+				root.add(top);
 
-	const trunkMaterial = new THREE.MeshPhongMaterial( { color: 'brown' } );
-	const topMaterial = new THREE.MeshPhongMaterial( { color: 'green' } );
+				root.position.set(x, 0, z);
+				scene.add(root);
 
-	function makeTree( x, z ) {
+				return root;
+			}
 
-		const root = new THREE.Object3D();
-		const trunk = new THREE.Mesh( trunkGeometry, trunkMaterial );
-		trunk.position.y = trunkHeight / 2;
-		root.add( trunk );
+			function frameArea(sizeToFitOnScreen, boxSize, boxCenter, camera) {
+				const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+				const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
+				const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
 
-		const top = new THREE.Mesh( topGeometry, topMaterial );
-		top.position.y = trunkHeight + topHeight / 2;
-		root.add( top );
+				camera.position.copy(boxCenter);
+				camera.position.z += distance;
 
-		root.position.set( x, 0, z );
-		scene.add( root );
+				// pick some near and far values for the frustum that
+				// will contain the box.
+				camera.near = boxSize / 100;
+				camera.far = boxSize * 100;
 
-		return root;
+				camera.updateProjectionMatrix();
+			}
 
-	}
+			function makeSpriteTexture(textureSize, obj) {
+				const rt = new THREE.WebGLRenderTarget(textureSize, textureSize);
 
-	function frameArea( sizeToFitOnScreen, boxSize, boxCenter, camera ) {
+				const aspect = 1; // because the render target is square
+				const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
-		const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
-		const halfFovY = THREE.MathUtils.degToRad( camera.fov * .5 );
-		const distance = halfSizeToFitOnScreen / Math.tan( halfFovY );
+				scene.add(obj);
 
-		camera.position.copy( boxCenter );
-		camera.position.z += distance;
+				// compute the box that contains obj
+				const box = new THREE.Box3().setFromObject(obj);
 
-		// pick some near and far values for the frustum that
-		// will contain the box.
-		camera.near = boxSize / 100;
-		camera.far = boxSize * 100;
+				const boxSize = box.getSize(new THREE.Vector3());
+				const boxCenter = box.getCenter(new THREE.Vector3());
 
-		camera.updateProjectionMatrix();
+				// set the camera to frame the box
+				const fudge = 1.1;
+				const size = Math.max(...boxSize.toArray()) * fudge;
+				frameArea(size, size, boxCenter, camera);
 
-	}
+				renderer.autoClear = false;
+				renderer.setRenderTarget(rt);
+				renderer.render(scene, camera);
+				renderer.setRenderTarget(null);
+				renderer.autoClear = true;
 
-	function makeSpriteTexture( textureSize, obj ) {
+				scene.remove(obj);
 
-		const rt = new THREE.WebGLRenderTarget( textureSize, textureSize );
+				return {
+					offset: boxCenter.multiplyScalar(fudge),
+					scale: size,
+					texture: rt.texture,
+				};
+			}
 
-		const aspect = 1; // because the render target is square
-		const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+			// make billboard texture
+			const tree = makeTree(0, 0);
+			const facadeSize = 64;
+			const treeSpriteInfo = makeSpriteTexture(facadeSize, tree);
 
-		scene.add( obj );
+			function makeSprite(spriteInfo, x, z) {
+				const { texture, offset, scale } = spriteInfo;
+				const mat = new THREE.SpriteMaterial({
+					map: texture,
+					transparent: true,
+				});
+				const sprite = new THREE.Sprite(mat);
+				scene.add(sprite);
+				sprite.position.set(offset.x + x, offset.y, offset.z + z);
+				sprite.scale.set(scale, scale, scale);
+			}
 
-		// compute the box that contains obj
-		const box = new THREE.Box3().setFromObject( obj );
+			for (let z = -50; z <= 50; z += 10) {
+				for (let x = -50; x <= 50; x += 10) {
+					makeSprite(treeSpriteInfo, x, z);
+				}
+			}
 
-		const boxSize = box.getSize( new THREE.Vector3() );
-		const boxCenter = box.getCenter( new THREE.Vector3() );
+			scene.background = new THREE.Color("lightblue");
 
-		// set the camera to frame the box
-		const fudge = 1.1;
-		const size = Math.max( ...boxSize.toArray() ) * fudge;
-		frameArea( size, size, boxCenter, camera );
+			{
+				const size = 400;
+				const geometry = new THREE.PlaneGeometry(size, size);
+				const material = new THREE.MeshPhongMaterial({ color: "gray" });
+				const mesh = new THREE.Mesh(geometry, material);
+				mesh.rotation.x = Math.PI * -0.5;
+				scene.add(mesh);
+			}
 
-		renderer.autoClear = false;
-		renderer.setRenderTarget( rt );
-		renderer.render( scene, camera );
-		renderer.setRenderTarget( null );
-		renderer.autoClear = true;
+			function resizeRendererToDisplaySize(renderer) {
+				const canvas = renderer.domElement;
+				const width = canvas.clientWidth;
+				const height = canvas.clientHeight;
+				const needResize = canvas.width !== width || canvas.height !== height;
+				if (needResize) {
+					renderer.setSize(width, height, false);
+				}
 
-		scene.remove( obj );
+				return needResize;
+			}
 
-		return {
-			offset: boxCenter.multiplyScalar( fudge ),
-			scale: size,
-			texture: rt.texture,
-		};
+			function render() {
+				if (resizeRendererToDisplaySize(renderer)) {
+					const canvas = renderer.domElement;
+					camera.aspect = canvas.clientWidth / canvas.clientHeight;
+					camera.updateProjectionMatrix();
+				}
 
-	}
+				renderer.render(scene, camera);
 
-	// make billboard texture
-	const tree = makeTree( 0, 0 );
-	const facadeSize = 64;
-	const treeSpriteInfo = makeSpriteTexture( facadeSize, tree );
+				requestAnimationFrame(render);
+			}
 
-	function makeSprite( spriteInfo, x, z ) {
-
-		const { texture, offset, scale } = spriteInfo;
-		const mat = new THREE.SpriteMaterial( {
-			map: texture,
-			transparent: true,
-		} );
-		const sprite = new THREE.Sprite( mat );
-		scene.add( sprite );
-		sprite.position.set(
-			offset.x + x,
-			offset.y,
-			offset.z + z );
-		sprite.scale.set( scale, scale, scale );
-
-	}
-
-	for ( let z = - 50; z <= 50; z += 10 ) {
-
-		for ( let x = - 50; x <= 50; x += 10 ) {
-
-			makeSprite( treeSpriteInfo, x, z );
-
+			requestAnimationFrame(render);
 		}
 
-	}
-
-	scene.background = new THREE.Color( 'lightblue' );
-
-	{
-
-		const size = 400;
-		const geometry = new THREE.PlaneGeometry( size, size );
-		const material = new THREE.MeshPhongMaterial( { color: 'gray' } );
-		const mesh = new THREE.Mesh( geometry, material );
-		mesh.rotation.x = Math.PI * - 0.5;
-		scene.add( mesh );
-
-	}
-
-	function resizeRendererToDisplaySize( renderer ) {
-
-		const canvas = renderer.domElement;
-		const width = canvas.clientWidth;
-		const height = canvas.clientHeight;
-		const needResize = canvas.width !== width || canvas.height !== height;
-		if ( needResize ) {
-
-			renderer.setSize( width, height, false );
-
-		}
-
-		return needResize;
-
-	}
-
-	function render() {
-
-		if ( resizeRendererToDisplaySize( renderer ) ) {
-
-			const canvas = renderer.domElement;
-			camera.aspect = canvas.clientWidth / canvas.clientHeight;
-			camera.updateProjectionMatrix();
-
-		}
-
-		renderer.render( scene, camera );
-
-		requestAnimationFrame( render );
-
-	}
-
-	requestAnimationFrame( render );
-
-}
-
-main();
-</script>
+		main();
+	</script>
 </html>

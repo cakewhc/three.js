@@ -1,11 +1,9 @@
-import Node, { addNodeClass } from '../core/Node.js';
-import { nodeProxy } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "../core/Node.js";
+import { nodeProxy } from "../shadernode/ShaderNode.js";
 
 class CodeNode extends Node {
-
-	constructor( code = '', includes = [], language = '' ) {
-
-		super( 'code' );
+	constructor(code = "", includes = [], language = "") {
+		super("code");
 
 		this.isCodeNode = true;
 
@@ -13,66 +11,52 @@ class CodeNode extends Node {
 		this.language = language;
 
 		this.includes = includes;
-
 	}
 
-	setIncludes( includes ) {
-
+	setIncludes(includes) {
 		this.includes = includes;
 
 		return this;
-
 	}
 
-	getIncludes( /*builder*/ ) {
-
+	getIncludes(/*builder*/) {
 		return this.includes;
-
 	}
 
-	generate( builder ) {
+	generate(builder) {
+		const includes = this.getIncludes(builder);
 
-		const includes = this.getIncludes( builder );
-
-		for ( const include of includes ) {
-
-			include.build( builder );
-
+		for (const include of includes) {
+			include.build(builder);
 		}
 
-		const nodeCode = builder.getCodeFromNode( this, this.getNodeType( builder ) );
+		const nodeCode = builder.getCodeFromNode(this, this.getNodeType(builder));
 		nodeCode.code = this.code;
 
 		return nodeCode.code;
-
 	}
 
-	serialize( data ) {
-
-		super.serialize( data );
+	serialize(data) {
+		super.serialize(data);
 
 		data.code = this.code;
 		data.language = this.language;
-
 	}
 
-	deserialize( data ) {
-
-		super.deserialize( data );
+	deserialize(data) {
+		super.deserialize(data);
 
 		this.code = data.code;
 		this.language = data.language;
-
 	}
-
 }
 
 export default CodeNode;
 
-export const code = nodeProxy( CodeNode );
+export const code = nodeProxy(CodeNode);
 
-export const js = ( src, includes ) => code( src, includes, 'js' );
-export const wgsl = ( src, includes ) => code( src, includes, 'wgsl' );
-export const glsl = ( src, includes ) => code( src, includes, 'glsl' );
+export const js = (src, includes) => code(src, includes, "js");
+export const wgsl = (src, includes) => code(src, includes, "wgsl");
+export const glsl = (src, includes) => code(src, includes, "glsl");
 
-addNodeClass( 'CodeNode', CodeNode );
+addNodeClass("CodeNode", CodeNode);

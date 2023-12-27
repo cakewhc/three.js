@@ -1,6 +1,4 @@
-import {
-	Vector2
-} from 'three';
+import { Vector2 } from "three";
 
 /**
  * Normal map shader
@@ -8,19 +6,16 @@ import {
  */
 
 const NormalMapShader = {
-
-	name: 'NormalMapShader',
+	name: "NormalMapShader",
 
 	uniforms: {
-
-		'heightMap': { value: null },
-		'resolution': { value: new Vector2( 512, 512 ) },
-		'scale': { value: new Vector2( 1, 1 ) },
-		'height': { value: 0.05 }
-
+		heightMap: { value: null },
+		resolution: { value: new Vector2(512, 512) },
+		scale: { value: new Vector2(1, 1) },
+		height: { value: 0.05 },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -31,7 +26,7 @@ const NormalMapShader = {
 
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 
 		uniform float height;
 		uniform vec2 resolution;
@@ -48,8 +43,7 @@ const NormalMapShader = {
 
 			gl_FragColor = vec4( ( 0.5 * normalize( vec3( val - valU, val - valV, height  ) ) + 0.5 ), 1.0 );
 
-		}`
-
+		}`,
 };
 
 export { NormalMapShader };

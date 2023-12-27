@@ -1,50 +1,39 @@
 /* global QUnit */
 
-import { CanvasTexture } from '../../../../src/textures/CanvasTexture.js';
+import { CanvasTexture } from "../../../../src/textures/CanvasTexture.js";
 
-import { Texture } from '../../../../src/textures/Texture.js';
+import { Texture } from "../../../../src/textures/Texture.js";
 
-export default QUnit.module( 'Textures', () => {
-
-	QUnit.module( 'CanvasTexture', () => {
-
+export default QUnit.module("Textures", () => {
+	QUnit.module("CanvasTexture", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			const object = new CanvasTexture();
 			assert.strictEqual(
-				object instanceof Texture, true,
-				'CanvasTexture extends from Texture'
+				object instanceof Texture,
+				true,
+				"CanvasTexture extends from Texture"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const object = new CanvasTexture();
-			assert.ok( object, 'Can instantiate a CanvasTexture.' );
-
-		} );
+			assert.ok(object, "Can instantiate a CanvasTexture.");
+		});
 
 		// PROPERTIES
-		QUnit.todo( 'needsUpdate', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
+		QUnit.todo("needsUpdate", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
 		// PUBLIC
-		QUnit.test( 'isCanvasTexture', ( assert ) => {
-
+		QUnit.test("isCanvasTexture", (assert) => {
 			const object = new CanvasTexture();
 			assert.ok(
 				object.isCanvasTexture,
-				'CanvasTexture.isCanvasTexture should be true'
+				"CanvasTexture.isCanvasTexture should be true"
 			);
-
-		} );
-
-	} );
-
-} );
+		});
+	});
+});

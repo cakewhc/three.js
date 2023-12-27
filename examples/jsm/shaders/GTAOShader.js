@@ -1,10 +1,4 @@
-import {
-	DataTexture,
-	Matrix4,
-	RepeatWrapping,
-	Vector2,
-	Vector3,
-} from 'three';
+import { DataTexture, Matrix4, RepeatWrapping, Vector2, Vector3 } from "three";
 
 /**
  * References:
@@ -37,14 +31,13 @@ import {
  */
 
 const GTAOShader = {
-
-	name: 'GTAOShader',
+	name: "GTAOShader",
 
 	defines: {
 		PERSPECTIVE_CAMERA: 1,
 		SAMPLES: 16,
 		NORMAL_VECTOR_TYPE: 1,
-		DEPTH_SWIZZLING: 'x',
+		DEPTH_SWIZZLING: "x",
 		SCREEN_SPACE_RADIUS: 0,
 		SCREEN_SPACE_RADIUS_SCALE: 100.0,
 		SCENE_CLIP_BOX: 0,
@@ -61,15 +54,15 @@ const GTAOShader = {
 		cameraProjectionMatrixInverse: { value: new Matrix4() },
 		cameraWorldMatrix: { value: new Matrix4() },
 		radius: { value: 0.25 },
-		distanceExponent: { value: 1. },
-		thickness: { value: 1. },
-		distanceFallOff: { value: 1. },
-		scale: { value: 1. },
-		sceneBoxMin: { value: new Vector3( - 1, - 1, - 1 ) },
-		sceneBoxMax: { value: new Vector3( 1, 1, 1 ) },
+		distanceExponent: { value: 1 },
+		thickness: { value: 1 },
+		distanceFallOff: { value: 1 },
+		scale: { value: 1 },
+		sceneBoxMin: { value: new Vector3(-1, -1, -1) },
+		sceneBoxMax: { value: new Vector3(1, 1, 1) },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -78,7 +71,7 @@ const GTAOShader = {
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 		varying vec2 vUv;
 		uniform highp sampler2D tNormal;
 		uniform highp sampler2D tDepth;
@@ -254,16 +247,14 @@ const GTAOShader = {
 			ao = pow(ao, scale);
 
 			gl_FragColor = FRAGMENT_OUTPUT;
-		}`
-
+		}`,
 };
 
 const GTAODepthShader = {
-
-	name: 'GTAODepthShader',
+	name: "GTAODepthShader",
 
 	defines: {
-		PERSPECTIVE_CAMERA: 1
+		PERSPECTIVE_CAMERA: 1,
 	},
 
 	uniforms: {
@@ -272,7 +263,7 @@ const GTAODepthShader = {
 		cameraFar: { value: null },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 		varying vec2 vUv;
 
 		void main() {
@@ -280,7 +271,7 @@ const GTAODepthShader = {
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 		uniform sampler2D tDepth;
 		uniform float cameraNear;
 		uniform float cameraFar;
@@ -302,20 +293,18 @@ const GTAODepthShader = {
 			float depth = getLinearDepth( vUv );
 			gl_FragColor = vec4( vec3( 1.0 - depth ), 1.0 );
 
-		}`
-
+		}`,
 };
 
 const GTAOBlendShader = {
-
-	name: 'GTAOBlendShader',
+	name: "GTAOBlendShader",
 
 	uniforms: {
 		tDiffuse: { value: null },
-		intensity: { value: 1.0 }
+		intensity: { value: 1.0 },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 		varying vec2 vUv;
 
 		void main() {
@@ -323,7 +312,7 @@ const GTAOBlendShader = {
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 		uniform float intensity;
 		uniform sampler2D tDiffuse;
 		varying vec2 vUv;
@@ -331,94 +320,78 @@ const GTAOBlendShader = {
 		void main() {
 			vec4 texel = texture2D( tDiffuse, vUv );
 			gl_FragColor = vec4(mix(vec3(1.), texel.rgb, intensity), texel.a);
-		}`
-
+		}`,
 };
 
-
-function generateMagicSquareNoise( size = 5 ) {
-
-	const noiseSize = Math.floor( size ) % 2 === 0 ? Math.floor( size ) + 1 : Math.floor( size );
-	const magicSquare = generateMagicSquare( noiseSize );
+function generateMagicSquareNoise(size = 5) {
+	const noiseSize =
+		Math.floor(size) % 2 === 0 ? Math.floor(size) + 1 : Math.floor(size);
+	const magicSquare = generateMagicSquare(noiseSize);
 	const noiseSquareSize = magicSquare.length;
-	const data = new Uint8Array( noiseSquareSize * 4 );
+	const data = new Uint8Array(noiseSquareSize * 4);
 
-	for ( let inx = 0; inx < noiseSquareSize; ++ inx ) {
-
-		const iAng = magicSquare[ inx ];
-		const angle = ( 2 * Math.PI * iAng ) / noiseSquareSize;
+	for (let inx = 0; inx < noiseSquareSize; ++inx) {
+		const iAng = magicSquare[inx];
+		const angle = (2 * Math.PI * iAng) / noiseSquareSize;
 		const randomVec = new Vector3(
-			Math.cos( angle ),
-			Math.sin( angle ),
+			Math.cos(angle),
+			Math.sin(angle),
 			0
 		).normalize();
-		data[ inx * 4 ] = ( randomVec.x * 0.5 + 0.5 ) * 255;
-		data[ inx * 4 + 1 ] = ( randomVec.y * 0.5 + 0.5 ) * 255;
-		data[ inx * 4 + 2 ] = 127;
-		data[ inx * 4 + 3 ] = 255;
-
+		data[inx * 4] = (randomVec.x * 0.5 + 0.5) * 255;
+		data[inx * 4 + 1] = (randomVec.y * 0.5 + 0.5) * 255;
+		data[inx * 4 + 2] = 127;
+		data[inx * 4 + 3] = 255;
 	}
 
-	const noiseTexture = new DataTexture( data, noiseSize, noiseSize );
+	const noiseTexture = new DataTexture(data, noiseSize, noiseSize);
 	noiseTexture.wrapS = RepeatWrapping;
 	noiseTexture.wrapT = RepeatWrapping;
 	noiseTexture.needsUpdate = true;
 
 	return noiseTexture;
-
 }
 
-function generateMagicSquare( size ) {
-
-	const noiseSize = Math.floor( size ) % 2 === 0 ? Math.floor( size ) + 1 : Math.floor( size );
+function generateMagicSquare(size) {
+	const noiseSize =
+		Math.floor(size) % 2 === 0 ? Math.floor(size) + 1 : Math.floor(size);
 	const noiseSquareSize = noiseSize * noiseSize;
-	const magicSquare = Array( noiseSquareSize ).fill( 0 );
-	let i = Math.floor( noiseSize / 2 );
+	const magicSquare = Array(noiseSquareSize).fill(0);
+	let i = Math.floor(noiseSize / 2);
 	let j = noiseSize - 1;
 
-	for ( let num = 1; num <= noiseSquareSize; ) {
-
-		if ( i === - 1 && j === noiseSize ) {
-
+	for (let num = 1; num <= noiseSquareSize; ) {
+		if (i === -1 && j === noiseSize) {
 			j = noiseSize - 2;
 			i = 0;
-
 		} else {
-
-			if ( j === noiseSize ) {
-
+			if (j === noiseSize) {
 				j = 0;
-
 			}
 
-			if ( i < 0 ) {
-
+			if (i < 0) {
 				i = noiseSize - 1;
-
 			}
-
 		}
 
-		if ( magicSquare[ i * noiseSize + j ] !== 0 ) {
-
+		if (magicSquare[i * noiseSize + j] !== 0) {
 			j -= 2;
-			i ++;
+			i++;
 			continue;
-
 		} else {
-
-			magicSquare[ i * noiseSize + j ] = num ++;
-
+			magicSquare[i * noiseSize + j] = num++;
 		}
 
-		j ++;
-		i --;
-
+		j++;
+		i--;
 	}
 
 	return magicSquare;
-
 }
 
-
-export { generateMagicSquareNoise, GTAOShader, GTAODepthShader, GTAOBlendShader };
+export {
+	generateMagicSquareNoise,
+	GTAOShader,
+	GTAODepthShader,
+	GTAOBlendShader,
+};

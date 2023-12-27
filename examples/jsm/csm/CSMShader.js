@@ -1,7 +1,7 @@
-import { ShaderChunk } from 'three';
+import { ShaderChunk } from "three";
 
 const CSMShader = {
-	lights_fragment_begin: /* glsl */`
+	lights_fragment_begin: /* glsl */ `
 vec3 geometryPosition = - vViewPosition;
 vec3 geometryNormal = normal;
 vec3 geometryViewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( vViewPosition );
@@ -283,13 +283,14 @@ IncidentLight directLight;
 
 #endif
 `,
-	lights_pars_begin: /* glsl */`
+	lights_pars_begin:
+		/* glsl */ `
 #if defined( USE_CSM ) && defined( CSM_CASCADES )
 uniform vec2 CSM_cascades[CSM_CASCADES];
 uniform float cameraNear;
 uniform float shadowFar;
 #endif
-	` + ShaderChunk.lights_pars_begin
+	` + ShaderChunk.lights_pars_begin,
 };
 
 export { CSMShader };

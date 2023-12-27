@@ -1,134 +1,118 @@
-import Node, { addNodeClass } from '../core/Node.js';
-import { expression } from '../code/ExpressionNode.js';
-import { bypass } from '../core/BypassNode.js';
-import { context } from '../core/ContextNode.js';
-import { addNodeElement, nodeObject, nodeArray } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "../core/Node.js";
+import { expression } from "../code/ExpressionNode.js";
+import { bypass } from "../core/BypassNode.js";
+import { context } from "../core/ContextNode.js";
+import {
+	addNodeElement,
+	nodeObject,
+	nodeArray,
+} from "../shadernode/ShaderNode.js";
 
 class LoopNode extends Node {
-
-	constructor( params = [] ) {
-
+	constructor(params = []) {
 		super();
 
 		this.params = params;
-
 	}
 
-	getVarName( index ) {
-
-		return String.fromCharCode( 'i'.charCodeAt() + index );
-
+	getVarName(index) {
+		return String.fromCharCode("i".charCodeAt() + index);
 	}
 
-	getProperties( builder ) {
+	getProperties(builder) {
+		const properties = builder.getNodeProperties(this);
 
-		const properties = builder.getNodeProperties( this );
-
-		if ( properties.stackNode !== undefined ) return properties;
+		if (properties.stackNode !== undefined) return properties;
 
 		//
 
 		const inputs = {};
 
-		for ( let i = 0, l = this.params.length - 1; i < l; i ++ ) {
+		for (let i = 0, l = this.params.length - 1; i < l; i++) {
+			const param = this.params[i];
 
-			const param = this.params[ i ];
+			const name = (param.isNode !== true && param.name) || this.getVarName(i);
+			const type = (param.isNode !== true && param.type) || "int";
 
-			const name = ( param.isNode !== true && param.name ) || this.getVarName( i );
-			const type = ( param.isNode !== true && param.type ) || 'int';
-
-			inputs[ name ] = expression( name, type );
-
+			inputs[name] = expression(name, type);
 		}
 
-		properties.returnsNode = this.params[ this.params.length - 1 ]( inputs, builder.addStack(), builder );
+		properties.returnsNode = this.params[this.params.length - 1](
+			inputs,
+			builder.addStack(),
+			builder
+		);
 		properties.stackNode = builder.removeStack();
 
 		return properties;
-
 	}
 
-	getNodeType( builder ) {
+	getNodeType(builder) {
+		const { returnsNode } = this.getProperties(builder);
 
-		const { returnsNode } = this.getProperties( builder );
-
-		return returnsNode ? returnsNode.getNodeType( builder ) : 'void';
-
+		return returnsNode ? returnsNode.getNodeType(builder) : "void";
 	}
 
-	setup( builder ) {
-
+	setup(builder) {
 		// setup properties
 
-		this.getProperties( builder );
-
+		this.getProperties(builder);
 	}
 
-	generate( builder ) {
-
-		const properties = this.getProperties( builder );
+	generate(builder) {
+		const properties = this.getProperties(builder);
 
 		const contextData = { tempWrite: false };
 
 		const params = this.params;
 		const stackNode = properties.stackNode;
 
-		for ( let i = 0, l = params.length - 1; i < l; i ++ ) {
+		for (let i = 0, l = params.length - 1; i < l; i++) {
+			const param = params[i];
 
-			const param = params[ i ];
+			let start = null,
+				end = null,
+				name = null,
+				type = null,
+				condition = null,
+				update = null;
 
-			let start = null, end = null, name = null, type = null, condition = null, update = null;
-
-			if ( param.isNode ) {
-
-				type = 'int';
-				name = this.getVarName( i );
-				start = '0';
-				end = param.build( builder, type );
-				condition = '<';
-
+			if (param.isNode) {
+				type = "int";
+				name = this.getVarName(i);
+				start = "0";
+				end = param.build(builder, type);
+				condition = "<";
 			} else {
-
-				type = param.type || 'int';
-				name = param.name || this.getVarName( i );
+				type = param.type || "int";
+				name = param.name || this.getVarName(i);
 				start = param.start;
 				end = param.end;
 				condition = param.condition;
 				update = param.update;
 
-				if ( typeof start === 'number' ) start = start.toString();
-				else if ( start && start.isNode ) start = start.build( builder, type );
+				if (typeof start === "number") start = start.toString();
+				else if (start && start.isNode) start = start.build(builder, type);
 
-				if ( typeof end === 'number' ) end = end.toString();
-				else if ( end && end.isNode ) end = end.build( builder, type );
+				if (typeof end === "number") end = end.toString();
+				else if (end && end.isNode) end = end.build(builder, type);
 
-				if ( start !== undefined && end === undefined ) {
-
-					start = start + ' - 1';
-					end = '0';
-					condition = '>=';
-
-				} else if ( end !== undefined && start === undefined ) {
-
-					start = '0';
-					condition = '<';
-
+				if (start !== undefined && end === undefined) {
+					start = start + " - 1";
+					end = "0";
+					condition = ">=";
+				} else if (end !== undefined && start === undefined) {
+					start = "0";
+					condition = "<";
 				}
 
-				if ( condition === undefined ) {
-
-					if ( Number( start ) > Number( end ) ) {
-
-						condition = '>=';
-
+				if (condition === undefined) {
+					if (Number(start) > Number(end)) {
+						condition = ">=";
 					} else {
-
-						condition = '<';
-
+						condition = "<";
 					}
-
 				}
-
 			}
 
 			const internalParam = { start, end, condition };
@@ -138,61 +122,61 @@ class LoopNode extends Node {
 			const startSnippet = internalParam.start;
 			const endSnippet = internalParam.end;
 
-			let declarationSnippet = '';
-			let conditionalSnippet = '';
-			let updateSnippet = '';
+			let declarationSnippet = "";
+			let conditionalSnippet = "";
+			let updateSnippet = "";
 
-			if ( ! update ) {
-
-				if ( type === 'int' ) {
-
-					if ( condition.includes( '<' ) ) update = '++';
-					else update = '--';
-
+			if (!update) {
+				if (type === "int") {
+					if (condition.includes("<")) update = "++";
+					else update = "--";
 				} else {
-
-					if ( condition.includes( '<' ) ) update = '+= 1';
-					else update = '-= 1';
-
+					if (condition.includes("<")) update = "+= 1";
+					else update = "-= 1";
 				}
-
 			}
 
-			declarationSnippet += builder.getVar( type, name ) + ' = ' + startSnippet;
+			declarationSnippet += builder.getVar(type, name) + " = " + startSnippet;
 
-			conditionalSnippet += name + ' ' + condition + ' ' + endSnippet;
-			updateSnippet += name + ' ' + update;
+			conditionalSnippet += name + " " + condition + " " + endSnippet;
+			updateSnippet += name + " " + update;
 
-			const forSnippet = `for ( ${ declarationSnippet }; ${ conditionalSnippet }; ${ updateSnippet } )`;
+			const forSnippet = `for ( ${declarationSnippet}; ${conditionalSnippet}; ${updateSnippet} )`;
 
-			builder.addFlowCode( ( i === 0 ? '\n' : '' ) + builder.tab + forSnippet + ' {\n\n' ).addFlowTab();
-
+			builder
+				.addFlowCode(
+					(i === 0 ? "\n" : "") + builder.tab + forSnippet + " {\n\n"
+				)
+				.addFlowTab();
 		}
 
-		const stackSnippet = context( stackNode, contextData ).build( builder, 'void' );
+		const stackSnippet = context(stackNode, contextData).build(builder, "void");
 
-		const returnsSnippet = properties.returnsNode ? properties.returnsNode.build( builder ) : '';
+		const returnsSnippet = properties.returnsNode
+			? properties.returnsNode.build(builder)
+			: "";
 
-		builder.removeFlowTab().addFlowCode( '\n' + builder.tab + stackSnippet );
+		builder.removeFlowTab().addFlowCode("\n" + builder.tab + stackSnippet);
 
-		for ( let i = 0, l = this.params.length - 1; i < l; i ++ ) {
-
-			builder.addFlowCode( ( i === 0 ? '' : builder.tab ) + '}\n\n' ).removeFlowTab();
-
+		for (let i = 0, l = this.params.length - 1; i < l; i++) {
+			builder
+				.addFlowCode((i === 0 ? "" : builder.tab) + "}\n\n")
+				.removeFlowTab();
 		}
 
 		builder.addFlowTab();
 
 		return returnsSnippet;
-
 	}
-
 }
 
 export default LoopNode;
 
-export const loop = ( ...params ) => nodeObject( new LoopNode( nodeArray( params, 'int' ) ) ).append();
+export const loop = (...params) =>
+	nodeObject(new LoopNode(nodeArray(params, "int"))).append();
 
-addNodeElement( 'loop', ( returns, ...params ) => bypass( returns, loop( ...params ) ) );
+addNodeElement("loop", (returns, ...params) =>
+	bypass(returns, loop(...params))
+);
 
-addNodeClass( 'LoopNode', LoopNode );
+addNodeClass("LoopNode", LoopNode);

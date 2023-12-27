@@ -1,11 +1,9 @@
-import { Texture } from './Texture.js';
-import { NearestFilter } from '../constants.js';
+import { Texture } from "./Texture.js";
+import { NearestFilter } from "../constants.js";
 
 class FramebufferTexture extends Texture {
-
-	constructor( width, height ) {
-
-		super( { width, height } );
+	constructor(width, height) {
+		super({ width, height });
 
 		this.isFramebufferTexture = true;
 
@@ -15,9 +13,7 @@ class FramebufferTexture extends Texture {
 		this.generateMipmaps = false;
 
 		this.needsUpdate = true;
-
 	}
-
 }
 
 export { FramebufferTexture };

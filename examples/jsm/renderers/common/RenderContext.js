@@ -1,12 +1,10 @@
-import { Vector4 } from 'three';
+import { Vector4 } from "three";
 
 let id = 0;
 
 class RenderContext {
-
 	constructor() {
-
-		this.id = id ++;
+		this.id = id++;
 
 		this.color = true;
 		this.clearColor = true;
@@ -33,9 +31,7 @@ class RenderContext {
 
 		this.width = 0;
 		this.height = 0;
-
 	}
-
 }
 
 export default RenderContext;

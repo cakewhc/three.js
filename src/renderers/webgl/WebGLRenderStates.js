@@ -1,48 +1,37 @@
-import { WebGLLights } from './WebGLLights.js';
+import { WebGLLights } from "./WebGLLights.js";
 
-function WebGLRenderState( extensions, capabilities ) {
-
-	const lights = new WebGLLights( extensions, capabilities );
+function WebGLRenderState(extensions, capabilities) {
+	const lights = new WebGLLights(extensions, capabilities);
 
 	const lightsArray = [];
 	const shadowsArray = [];
 
 	function init() {
-
 		lightsArray.length = 0;
 		shadowsArray.length = 0;
-
 	}
 
-	function pushLight( light ) {
-
-		lightsArray.push( light );
-
+	function pushLight(light) {
+		lightsArray.push(light);
 	}
 
-	function pushShadow( shadowLight ) {
-
-		shadowsArray.push( shadowLight );
-
+	function pushShadow(shadowLight) {
+		shadowsArray.push(shadowLight);
 	}
 
-	function setupLights( useLegacyLights ) {
-
-		lights.setup( lightsArray, useLegacyLights );
-
+	function setupLights(useLegacyLights) {
+		lights.setup(lightsArray, useLegacyLights);
 	}
 
-	function setupLightsView( camera ) {
-
-		lights.setupView( lightsArray, camera );
-
+	function setupLightsView(camera) {
+		lights.setupView(lightsArray, camera);
 	}
 
 	const state = {
 		lightsArray: lightsArray,
 		shadowsArray: shadowsArray,
 
-		lights: lights
+		lights: lights,
 	};
 
 	return {
@@ -52,56 +41,40 @@ function WebGLRenderState( extensions, capabilities ) {
 		setupLightsView: setupLightsView,
 
 		pushLight: pushLight,
-		pushShadow: pushShadow
+		pushShadow: pushShadow,
 	};
-
 }
 
-function WebGLRenderStates( extensions, capabilities ) {
-
+function WebGLRenderStates(extensions, capabilities) {
 	let renderStates = new WeakMap();
 
-	function get( scene, renderCallDepth = 0 ) {
-
-		const renderStateArray = renderStates.get( scene );
+	function get(scene, renderCallDepth = 0) {
+		const renderStateArray = renderStates.get(scene);
 		let renderState;
 
-		if ( renderStateArray === undefined ) {
-
-			renderState = new WebGLRenderState( extensions, capabilities );
-			renderStates.set( scene, [ renderState ] );
-
+		if (renderStateArray === undefined) {
+			renderState = new WebGLRenderState(extensions, capabilities);
+			renderStates.set(scene, [renderState]);
 		} else {
-
-			if ( renderCallDepth >= renderStateArray.length ) {
-
-				renderState = new WebGLRenderState( extensions, capabilities );
-				renderStateArray.push( renderState );
-
+			if (renderCallDepth >= renderStateArray.length) {
+				renderState = new WebGLRenderState(extensions, capabilities);
+				renderStateArray.push(renderState);
 			} else {
-
-				renderState = renderStateArray[ renderCallDepth ];
-
+				renderState = renderStateArray[renderCallDepth];
 			}
-
 		}
 
 		return renderState;
-
 	}
 
 	function dispose() {
-
 		renderStates = new WeakMap();
-
 	}
 
 	return {
 		get: get,
-		dispose: dispose
+		dispose: dispose,
 	};
-
 }
-
 
 export { WebGLRenderStates };

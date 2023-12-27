@@ -1,13 +1,11 @@
-import NodeMaterial, { addNodeMaterial } from './NodeMaterial.js';
+import NodeMaterial, { addNodeMaterial } from "./NodeMaterial.js";
 
-import { PointsMaterial } from 'three';
+import { PointsMaterial } from "three";
 
 const defaultValues = new PointsMaterial();
 
 class PointsNodeMaterial extends NodeMaterial {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.isPointsNodeMaterial = true;
@@ -18,22 +16,18 @@ class PointsNodeMaterial extends NodeMaterial {
 
 		this.sizeNode = null;
 
-		this.setDefaultValues( defaultValues );
+		this.setDefaultValues(defaultValues);
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
 
-	copy( source ) {
-
+	copy(source) {
 		this.sizeNode = source.sizeNode;
 
-		return super.copy( source );
-
+		return super.copy(source);
 	}
-
 }
 
 export default PointsNodeMaterial;
 
-addNodeMaterial( 'PointsNodeMaterial', PointsNodeMaterial );
+addNodeMaterial("PointsNodeMaterial", PointsNodeMaterial);

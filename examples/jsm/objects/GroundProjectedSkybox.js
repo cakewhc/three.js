@@ -1,18 +1,14 @@
-import { Mesh, IcosahedronGeometry, ShaderMaterial, DoubleSide } from 'three';
+import { Mesh, IcosahedronGeometry, ShaderMaterial, DoubleSide } from "three";
 
 /**
  * Ground projected env map adapted from @react-three/drei.
  * https://github.com/pmndrs/drei/blob/master/src/core/Environment.tsx
  */
 class GroundProjectedSkybox extends Mesh {
-
-	constructor( texture, options = {} ) {
-
+	constructor(texture, options = {}) {
 		const isCubeMap = texture.isCubeTexture;
 
-		const defines = [
-			isCubeMap ? '#define ENVMAP_TYPE_CUBE' : ''
-		];
+		const defines = [isCubeMap ? "#define ENVMAP_TYPE_CUBE" : ""];
 
 		const vertexShader = /* glsl */ `
 			varying vec3 vWorldPosition;
@@ -26,7 +22,9 @@ class GroundProjectedSkybox extends Mesh {
 
 			}
 			`;
-		const fragmentShader = defines.join( '\n' ) + /* glsl */ `
+		const fragmentShader =
+			defines.join("\n") +
+			/* glsl */ `
 
 				varying vec3 vWorldPosition;
 
@@ -131,42 +129,32 @@ class GroundProjectedSkybox extends Mesh {
 			radius: { value: options.radius || 100 },
 		};
 
-		const geometry = new IcosahedronGeometry( 1, 16 );
-		const material = new ShaderMaterial( {
+		const geometry = new IcosahedronGeometry(1, 16);
+		const material = new ShaderMaterial({
 			uniforms,
 			fragmentShader,
 			vertexShader,
 			side: DoubleSide,
-		} );
+		});
 
-		super( geometry, material );
-
+		super(geometry, material);
 	}
 
-	set radius( radius ) {
-
+	set radius(radius) {
 		this.material.uniforms.radius.value = radius;
-
 	}
 
 	get radius() {
-
 		return this.material.uniforms.radius.value;
-
 	}
 
-	set height( height ) {
-
+	set height(height) {
 		this.material.uniforms.height.value = height;
-
 	}
 
 	get height() {
-
 		return this.material.uniforms.height.value;
-
 	}
-
 }
 
 export { GroundProjectedSkybox };

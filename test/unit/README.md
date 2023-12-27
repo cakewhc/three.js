@@ -7,7 +7,7 @@
 You can run the unit tests in two environments:
 
 - Node.js: Execute `npm run test-unit` from the root folder
-- Browser: Execute `npx servez -p 8080 --ssl` (or run any other local web sever) from the root folder and access `https://localhost:8080/test/unit/UnitTests.html` in a web browser. 
+- Browser: Execute `npx servez -p 8080 --ssl` (or run any other local web sever) from the root folder and access `https://localhost:8080/test/unit/UnitTests.html` in a web browser.
 
 See [Installation](https://threejs.org/docs/#manual/introduction/Installation) for more information.
 
@@ -26,4 +26,3 @@ An error that indicates "no tests were found" means that an import statement cou
 ## Debugging
 
 To debug a test, add `debugger;` to the test code. Then, run the test in a browser and open the developer tools. The test will stop at the `debugger` statement and you can inspect the code.
-

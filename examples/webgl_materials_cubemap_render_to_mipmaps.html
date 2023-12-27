@@ -2,17 +2,20 @@
 <html lang="en">
 	<head>
 		<title>three.js webgl - materials - cubemap mipmaps</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="main.css">
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+		/>
+		<link type="text/css" rel="stylesheet" href="main.css" />
 	</head>
 	<body>
-
 		<div id="container"></div>
 		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - rendering to cubemap mip levels demo.<br/>
-			Left: original cubemap<br/>
-			Right: generated cubemap<br/>
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>
+			- rendering to cubemap mip levels demo.<br />
+			Left: original cubemap<br />
+			Right: generated cubemap<br />
 		</div>
 
 		<script type="importmap">
@@ -25,16 +28,14 @@
 		</script>
 
 		<script type="module">
-
-			import * as THREE from 'three';
-			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import * as THREE from "three";
+			import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 			let container;
 			let camera, scene, renderer;
 
 			const CubemapFilterShader = {
-
-				name: 'CubemapFilterShader',
+				name: "CubemapFilterShader",
 
 				uniforms: {
 					cubeTexture: { value: null },
@@ -82,28 +83,18 @@
 					`,
 			};
 
-
 			init();
 			animate();
 
-
-			async function loadCubeTexture( urls ) {
-
-				return new Promise( function ( resolve ) {
-
-					new THREE.CubeTextureLoader().load( urls, function ( cubeTexture ) {
-
-						resolve( cubeTexture );
-
-					} );
-
-
-				} );
-
+			async function loadCubeTexture(urls) {
+				return new Promise(function (resolve) {
+					new THREE.CubeTextureLoader().load(urls, function (cubeTexture) {
+						resolve(cubeTexture);
+					});
+				});
 			}
 
-			function allocateCubemapRenderTarget( cubeMapSize ) {
-
+			function allocateCubemapRenderTarget(cubeMapSize) {
 				const params = {
 					magFilter: THREE.LinearFilter,
 					minFilter: THREE.LinearMipMapLinearFilter,
@@ -114,127 +105,132 @@
 					depthBuffer: false,
 				};
 
-				const rt = new THREE.WebGLCubeRenderTarget( cubeMapSize, params );
+				const rt = new THREE.WebGLCubeRenderTarget(cubeMapSize, params);
 
-				const mipLevels = Math.log( cubeMapSize ) * Math.LOG2E + 1.0;
-				for ( let i = 0; i < mipLevels; i ++ ) rt.texture.mipmaps.push( {} );
+				const mipLevels = Math.log(cubeMapSize) * Math.LOG2E + 1.0;
+				for (let i = 0; i < mipLevels; i++) rt.texture.mipmaps.push({});
 
 				rt.texture.mapping = THREE.CubeReflectionMapping;
 				return rt;
-
 			}
 
-			function renderToCubeTexture( cubeMapRenderTarget, sourceCubeTexture ) {
+			function renderToCubeTexture(cubeMapRenderTarget, sourceCubeTexture) {
+				const geometry = new THREE.BoxGeometry(5, 5, 5);
 
-				const geometry = new THREE.BoxGeometry( 5, 5, 5 );
-
-				const material = new THREE.ShaderMaterial( {
+				const material = new THREE.ShaderMaterial({
 					name: CubemapFilterShader.name,
-					uniforms: THREE.UniformsUtils.clone( CubemapFilterShader.uniforms ),
+					uniforms: THREE.UniformsUtils.clone(CubemapFilterShader.uniforms),
 					vertexShader: CubemapFilterShader.vertexShader,
 					fragmentShader: CubemapFilterShader.fragmentShader,
 					side: THREE.BackSide,
 					blending: THREE.NoBlending,
-				} );
+				});
 
 				material.uniforms.cubeTexture.value = sourceCubeTexture;
 
-				const mesh = new THREE.Mesh( geometry, material );
-				const cubeCamera = new THREE.CubeCamera( 1, 10, cubeMapRenderTarget );
-				const mipmapCount = Math.floor( Math.log2( Math.max( cubeMapRenderTarget.width, cubeMapRenderTarget.height ) ) );
+				const mesh = new THREE.Mesh(geometry, material);
+				const cubeCamera = new THREE.CubeCamera(1, 10, cubeMapRenderTarget);
+				const mipmapCount = Math.floor(
+					Math.log2(
+						Math.max(cubeMapRenderTarget.width, cubeMapRenderTarget.height)
+					)
+				);
 
-				for ( let mipmap = 0; mipmap < mipmapCount; mipmap ++ ) {
-
+				for (let mipmap = 0; mipmap < mipmapCount; mipmap++) {
 					material.uniforms.mipIndex.value = mipmap;
 					material.needsUpdate = true;
 
-					cubeMapRenderTarget.viewport.set( 0, 0, cubeMapRenderTarget.width >> mipmap, cubeMapRenderTarget.height >> mipmap );
+					cubeMapRenderTarget.viewport.set(
+						0,
+						0,
+						cubeMapRenderTarget.width >> mipmap,
+						cubeMapRenderTarget.height >> mipmap
+					);
 
 					cubeCamera.activeMipmapLevel = mipmap;
-					cubeCamera.update( renderer, mesh );
-
+					cubeCamera.update(renderer, mesh);
 				}
 
 				mesh.geometry.dispose();
 				mesh.material.dispose();
-
 			}
 
 			function init() {
-
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+				container = document.createElement("div");
+				document.body.appendChild(container);
 
 				// Create renderer
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				container.appendChild(renderer.domElement);
 
 				scene = new THREE.Scene();
 
-				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera = new THREE.PerspectiveCamera(
+					50,
+					window.innerWidth / window.innerHeight,
+					1,
+					10000
+				);
 				camera.position.z = 500;
 
 				// Create controls
-				const controls = new OrbitControls( camera, renderer.domElement );
+				const controls = new OrbitControls(camera, renderer.domElement);
 				controls.minPolarAngle = Math.PI / 4;
 				controls.maxPolarAngle = Math.PI / 1.5;
 
-				window.addEventListener( 'resize', onWindowResize );
+				window.addEventListener("resize", onWindowResize);
 
 				// Load a cube texture
-				const r = 'textures/cube/Park3Med/';
+				const r = "textures/cube/Park3Med/";
 				const urls = [
-					r + 'px.jpg', r + 'nx.jpg',
-					r + 'py.jpg', r + 'ny.jpg',
-					r + 'pz.jpg', r + 'nz.jpg'
+					r + "px.jpg",
+					r + "nx.jpg",
+					r + "py.jpg",
+					r + "ny.jpg",
+					r + "pz.jpg",
+					r + "nz.jpg",
 				];
 
-				loadCubeTexture( urls ).then( ( cubeTexture ) => {
-
+				loadCubeTexture(urls).then((cubeTexture) => {
 					// Allocate a cube map render target
-					const cubeMapRenderTarget = allocateCubemapRenderTarget( 512 );
+					const cubeMapRenderTarget = allocateCubemapRenderTarget(512);
 
 					// Render to all the mip levels of cubeMapRenderTarget
-					renderToCubeTexture( cubeMapRenderTarget, cubeTexture );
+					renderToCubeTexture(cubeMapRenderTarget, cubeTexture);
 
 					// Create geometry
-					const sphere = new THREE.SphereGeometry( 100, 128, 128 );
-					let material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: cubeTexture } );
+					const sphere = new THREE.SphereGeometry(100, 128, 128);
+					let material = new THREE.MeshBasicMaterial({
+						color: 0xffffff,
+						envMap: cubeTexture,
+					});
 
-					let mesh = new THREE.Mesh( sphere, material );
-					mesh.position.set( - 100, 0, 0 );
-					scene.add( mesh );
+					let mesh = new THREE.Mesh(sphere, material);
+					mesh.position.set(-100, 0, 0);
+					scene.add(mesh);
 
 					material = material.clone();
 					material.envMap = cubeMapRenderTarget.texture;
 
-					mesh = new THREE.Mesh( sphere, material );
-					mesh.position.set( 100, 0, 0 );
-					scene.add( mesh );
-
-				} );
-
+					mesh = new THREE.Mesh(sphere, material);
+					mesh.position.set(100, 0, 0);
+					scene.add(mesh);
+				});
 			}
 
 			function onWindowResize() {
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
+				renderer.setSize(window.innerWidth, window.innerHeight);
 			}
 
 			function animate() {
-
-				requestAnimationFrame( animate );
-				renderer.render( scene, camera );
-
+				requestAnimationFrame(animate);
+				renderer.render(scene, camera);
 			}
-
 		</script>
-
 	</body>
 </html>

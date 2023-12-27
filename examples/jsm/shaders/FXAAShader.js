@@ -1,6 +1,4 @@
-import {
-	Vector2
-} from 'three';
+import { Vector2 } from "three";
 
 /**
  * NVIDIA FXAA by Timothy Lottes
@@ -11,17 +9,14 @@ import {
  */
 
 const FXAAShader = {
-
-	name: 'FXAAShader',
+	name: "FXAAShader",
 
 	uniforms: {
-
-		'tDiffuse': { value: null },
-		'resolution': { value: new Vector2( 1 / 1024, 1 / 512 ) }
-
+		tDiffuse: { value: null },
+		resolution: { value: new Vector2(1 / 1024, 1 / 512) },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -32,7 +27,7 @@ const FXAAShader = {
 
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 		precision highp float;
 
 		uniform sampler2D tDiffuse;
@@ -281,8 +276,7 @@ const FXAAShader = {
 			);
 
 		}
-	`
-
+	`,
 };
 
 export { FXAAShader };

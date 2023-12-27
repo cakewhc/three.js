@@ -7,122 +7,113 @@ import {
 	UnsignedByteType,
 	ClampToEdgeWrapping,
 	LinearFilter,
-} from 'three';
+} from "three";
 
 export class LUTImageLoader extends Loader {
-
-	constructor( flipVertical = false ) {
-		//The NeutralLUT.png has green at the bottom for Unreal ang green at the top for Unity URP Color Lookup 
+	constructor(flipVertical = false) {
+		//The NeutralLUT.png has green at the bottom for Unreal ang green at the top for Unity URP Color Lookup
 		//post-processing. If you're using lut image strips from a Unity pipeline then pass true to the constructor
-		
+
 		super();
 
 		this.flip = flipVertical;
-
 	}
 
-	load( url, onLoad, onProgress, onError ) {
+	load(url, onLoad, onProgress, onError) {
+		const loader = new TextureLoader(this.manager);
 
-		const loader = new TextureLoader( this.manager );
+		loader.setCrossOrigin(this.crossOrigin);
 
-		loader.setCrossOrigin( this.crossOrigin );
+		loader.setPath(this.path);
+		loader.load(
+			url,
+			(texture) => {
+				try {
+					let imageData;
 
-		loader.setPath( this.path );
-		loader.load( url, texture => {
+					if (texture.image.width < texture.image.height) {
+						imageData = this.getImageData(texture);
+					} else {
+						imageData = this.horz2Vert(texture);
+					}
 
-			try {
+					onLoad(
+						this.parse(
+							imageData.data,
+							Math.min(texture.image.width, texture.image.height)
+						)
+					);
+				} catch (e) {
+					if (onError) {
+						onError(e);
+					} else {
+						console.error(e);
+					}
 
-				let imageData;
-
-				if ( texture.image.width < texture.image.height ) {
-
-					imageData = this.getImageData( texture );
-
-				} else {
-
-					imageData = this.horz2Vert( texture );
-
+					this.manager.itemError(url);
 				}
-
-				onLoad( this.parse( imageData.data, Math.min( texture.image.width, texture.image.height ) ) );
-
-			} catch ( e ) {
-
-				if ( onError ) {
-
-					onError( e );
-
-				} else {
-
-					console.error( e );
-
-				}
-
-				this.manager.itemError( url );
-
-			}
-
-		}, onProgress, onError );
-
+			},
+			onProgress,
+			onError
+		);
 	}
 
-	getImageData( texture ) {
-
+	getImageData(texture) {
 		const width = texture.image.width;
 		const height = texture.image.height;
 
-		const canvas = document.createElement( 'canvas' );
+		const canvas = document.createElement("canvas");
 		canvas.width = width;
 		canvas.height = height;
 
-		const context = canvas.getContext( '2d' );
+		const context = canvas.getContext("2d");
 
-		if ( this.flip === true ) {
-
-			context.scale( 1, - 1 );
-			context.translate( 0, - height );
-
+		if (this.flip === true) {
+			context.scale(1, -1);
+			context.translate(0, -height);
 		}
 
-		context.drawImage( texture.image, 0, 0 );
+		context.drawImage(texture.image, 0, 0);
 
-		return context.getImageData( 0, 0, width, height );
-
+		return context.getImageData(0, 0, width, height);
 	}
 
-	horz2Vert( texture ) {
-
+	horz2Vert(texture) {
 		const width = texture.image.height;
 		const height = texture.image.width;
 
-		const canvas = document.createElement( 'canvas' );
+		const canvas = document.createElement("canvas");
 		canvas.width = width;
 		canvas.height = height;
 
-		const context = canvas.getContext( '2d' );
+		const context = canvas.getContext("2d");
 
-		if ( this.flip === true ) {
-
-			context.scale( 1, - 1 );
-			context.translate( 0, - height );
-
+		if (this.flip === true) {
+			context.scale(1, -1);
+			context.translate(0, -height);
 		}
 
-		for ( let i = 0; i < width; i ++ ) {
-
+		for (let i = 0; i < width; i++) {
 			const sy = i * width;
-			const dy = ( this.flip ) ? height - i * width : i * width;
-			context.drawImage( texture.image, sy, 0, width, width, 0, dy, width, width );
-
+			const dy = this.flip ? height - i * width : i * width;
+			context.drawImage(
+				texture.image,
+				sy,
+				0,
+				width,
+				width,
+				0,
+				dy,
+				width,
+				width
+			);
 		}
 
-		return context.getImageData( 0, 0, width, height );
-
+		return context.getImageData(0, 0, width, height);
 	}
 
-	parse( dataArray, size ) {
-
-		const data = new Uint8Array( dataArray );
+	parse(dataArray, size) {
+		const data = new Uint8Array(dataArray);
 		const texture = new DataTexture();
 		texture.image.data = data;
 		texture.image.width = size;
@@ -156,7 +147,5 @@ export class LUTImageLoader extends Loader {
 			texture,
 			texture3D,
 		};
-
 	}
-
 }

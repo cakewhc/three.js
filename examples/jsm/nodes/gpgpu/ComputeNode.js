@@ -1,12 +1,10 @@
-import Node, { addNodeClass } from '../core/Node.js';
-import { NodeUpdateType } from '../core/constants.js';
-import { addNodeElement, nodeObject } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "../core/Node.js";
+import { NodeUpdateType } from "../core/constants.js";
+import { addNodeElement, nodeObject } from "../shadernode/ShaderNode.js";
 
 class ComputeNode extends Node {
-
-	constructor( computeNode, count, workgroupSize = [ 64 ] ) {
-
-		super( 'void' );
+	constructor(computeNode, count, workgroupSize = [64]) {
+		super("void");
 
 		this.isComputeNode = true;
 
@@ -20,66 +18,50 @@ class ComputeNode extends Node {
 		this.updateBeforeType = NodeUpdateType.OBJECT;
 
 		this.updateDispatchCount();
-
 	}
 
 	dispose() {
-
-		this.dispatchEvent( { type: 'dispose' } );
-
+		this.dispatchEvent({ type: "dispose" });
 	}
 
-	set needsUpdate( value ) {
-
-		if ( value === true ) this.version ++;
-
+	set needsUpdate(value) {
+		if (value === true) this.version++;
 	}
 
 	updateDispatchCount() {
-
 		const { count, workgroupSize } = this;
 
-		let size = workgroupSize[ 0 ];
+		let size = workgroupSize[0];
 
-		for ( let i = 1; i < workgroupSize.length; i ++ )
-			size *= workgroupSize[ i ];
+		for (let i = 1; i < workgroupSize.length; i++) size *= workgroupSize[i];
 
-		this.dispatchCount = Math.ceil( count / size );
-
+		this.dispatchCount = Math.ceil(count / size);
 	}
 
-	onInit() { }
+	onInit() {}
 
-	updateBefore( { renderer } ) {
-
-		renderer.compute( this );
-
+	updateBefore({ renderer }) {
+		renderer.compute(this);
 	}
 
-	generate( builder ) {
-
+	generate(builder) {
 		const { shaderStage } = builder;
 
-		if ( shaderStage === 'compute' ) {
+		if (shaderStage === "compute") {
+			const snippet = this.computeNode.build(builder, "void");
 
-			const snippet = this.computeNode.build( builder, 'void' );
-
-			if ( snippet !== '' ) {
-
-				builder.addLineFlowCode( snippet );
-
+			if (snippet !== "") {
+				builder.addLineFlowCode(snippet);
 			}
-
 		}
-
 	}
-
 }
 
 export default ComputeNode;
 
-export const compute = ( node, count, workgroupSize ) => nodeObject( new ComputeNode( nodeObject( node ), count, workgroupSize ) );
+export const compute = (node, count, workgroupSize) =>
+	nodeObject(new ComputeNode(nodeObject(node), count, workgroupSize));
 
-addNodeElement( 'compute', compute );
+addNodeElement("compute", compute);
 
-addNodeClass( 'ComputeNode', ComputeNode );
+addNodeClass("ComputeNode", ComputeNode);

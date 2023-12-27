@@ -1,51 +1,40 @@
 /* global QUnit */
 
-import { ArrayCamera } from '../../../../src/cameras/ArrayCamera.js';
+import { ArrayCamera } from "../../../../src/cameras/ArrayCamera.js";
 
-import { PerspectiveCamera } from '../../../../src/cameras/PerspectiveCamera.js';
+import { PerspectiveCamera } from "../../../../src/cameras/PerspectiveCamera.js";
 
-export default QUnit.module( 'Cameras', () => {
-
-	QUnit.module( 'ArrayCamera', () => {
-
+export default QUnit.module("Cameras", () => {
+	QUnit.module("ArrayCamera", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			const object = new ArrayCamera();
 			assert.strictEqual(
-				object instanceof PerspectiveCamera, true,
-				'ArrayCamera extends from PerspectiveCamera'
+				object instanceof PerspectiveCamera,
+				true,
+				"ArrayCamera extends from PerspectiveCamera"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const object = new ArrayCamera();
-			assert.ok( object, 'Can instantiate an ArrayCamera.' );
-
-		} );
+			assert.ok(object, "Can instantiate an ArrayCamera.");
+		});
 
 		// PROPERTIES
-		QUnit.todo( 'cameras', ( assert ) => {
-
+		QUnit.todo("cameras", (assert) => {
 			// array
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
+			assert.ok(false, "everything's gonna be alright");
+		});
 
 		// PUBLIC
-		QUnit.test( 'isArrayCamera', ( assert ) => {
-
+		QUnit.test("isArrayCamera", (assert) => {
 			const object = new ArrayCamera();
 			assert.ok(
 				object.isArrayCamera,
-				'ArrayCamera.isArrayCamera should be true'
+				"ArrayCamera.isArrayCamera should be true"
 			);
-
-		} );
-
-	} );
-
-} );
+		});
+	});
+});

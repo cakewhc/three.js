@@ -1,14 +1,12 @@
-import { Material } from './Material.js';
+import { Material } from "./Material.js";
 
 class MeshDistanceMaterial extends Material {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.isMeshDistanceMaterial = true;
 
-		this.type = 'MeshDistanceMaterial';
+		this.type = "MeshDistanceMaterial";
 
 		this.map = null;
 
@@ -18,13 +16,11 @@ class MeshDistanceMaterial extends Material {
 		this.displacementScale = 1;
 		this.displacementBias = 0;
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
 
-	copy( source ) {
-
-		super.copy( source );
+	copy(source) {
+		super.copy(source);
 
 		this.map = source.map;
 
@@ -35,9 +31,7 @@ class MeshDistanceMaterial extends Material {
 		this.displacementBias = source.displacementBias;
 
 		return this;
-
 	}
-
 }
 
 export { MeshDistanceMaterial };

@@ -1,36 +1,31 @@
-import { Material } from './Material.js';
-import { Color } from '../math/Color.js';
+import { Material } from "./Material.js";
+import { Color } from "../math/Color.js";
 
 class LineBasicMaterial extends Material {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.isLineBasicMaterial = true;
 
-		this.type = 'LineBasicMaterial';
+		this.type = "LineBasicMaterial";
 
-		this.color = new Color( 0xffffff );
+		this.color = new Color(0xffffff);
 
 		this.map = null;
 
 		this.linewidth = 1;
-		this.linecap = 'round';
-		this.linejoin = 'round';
+		this.linecap = "round";
+		this.linejoin = "round";
 
 		this.fog = true;
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
 
+	copy(source) {
+		super.copy(source);
 
-	copy( source ) {
-
-		super.copy( source );
-
-		this.color.copy( source.color );
+		this.color.copy(source.color);
 
 		this.map = source.map;
 
@@ -41,9 +36,7 @@ class LineBasicMaterial extends Material {
 		this.fog = source.fog;
 
 		return this;
-
 	}
-
 }
 
 export { LineBasicMaterial };

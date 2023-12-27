@@ -1,57 +1,44 @@
 /* global QUnit */
 
-import { CubeCamera } from '../../../../src/cameras/CubeCamera.js';
+import { CubeCamera } from "../../../../src/cameras/CubeCamera.js";
 
-import { Object3D } from '../../../../src/core/Object3D.js';
+import { Object3D } from "../../../../src/core/Object3D.js";
 
-export default QUnit.module( 'Cameras', () => {
-
-	QUnit.module( 'CubeCamera', () => {
-
+export default QUnit.module("Cameras", () => {
+	QUnit.module("CubeCamera", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			const object = new CubeCamera();
 			assert.strictEqual(
-				object instanceof Object3D, true,
-				'CubeCamera extends from Object3D'
+				object instanceof Object3D,
+				true,
+				"CubeCamera extends from Object3D"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const object = new CubeCamera();
-			assert.ok( object, 'Can instantiate a CubeCamera.' );
-
-		} );
+			assert.ok(object, "Can instantiate a CubeCamera.");
+		});
 
 		// PROPERTIES
-		QUnit.test( 'type', ( assert ) => {
-
+		QUnit.test("type", (assert) => {
 			const object = new CubeCamera();
 			assert.ok(
-				object.type === 'CubeCamera',
-				'CubeCamera.type should be CubeCamera'
+				object.type === "CubeCamera",
+				"CubeCamera.type should be CubeCamera"
 			);
+		});
 
-		} );
-
-		QUnit.todo( 'renderTarget', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
+		QUnit.todo("renderTarget", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
 		// PUBLIC
-		QUnit.todo( 'update', ( assert ) => {
-
+		QUnit.todo("update", (assert) => {
 			// update( renderer, scene )
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-	} );
-
-} );
+			assert.ok(false, "everything's gonna be alright");
+		});
+	});
+});

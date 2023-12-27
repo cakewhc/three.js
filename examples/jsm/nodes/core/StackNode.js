@@ -1,11 +1,14 @@
-import Node, { addNodeClass } from './Node.js';
-import { cond } from '../math/CondNode.js';
-import { ShaderNode, nodeProxy, getCurrentStack, setCurrentStack } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "./Node.js";
+import { cond } from "../math/CondNode.js";
+import {
+	ShaderNode,
+	nodeProxy,
+	getCurrentStack,
+	setCurrentStack,
+} from "../shadernode/ShaderNode.js";
 
 class StackNode extends Node {
-
-	constructor( parent = null ) {
-
+	constructor(parent = null) {
 		super();
 
 		this.nodes = [];
@@ -16,74 +19,60 @@ class StackNode extends Node {
 		this._currentCond = null;
 
 		this.isStackNode = true;
-
 	}
 
-	getNodeType( builder ) {
-
-		return this.outputNode ? this.outputNode.getNodeType( builder ) : 'void';
-
+	getNodeType(builder) {
+		return this.outputNode ? this.outputNode.getNodeType(builder) : "void";
 	}
 
-	add( node ) {
-
-		this.nodes.push( node );
+	add(node) {
+		this.nodes.push(node);
 
 		return this;
-
 	}
 
-	if( boolNode, method ) {
+	if(boolNode, method) {
+		const methodNode = new ShaderNode(method);
+		this._currentCond = cond(boolNode, methodNode);
 
-		const methodNode = new ShaderNode( method );
-		this._currentCond = cond( boolNode, methodNode );
-
-		return this.add( this._currentCond );
-
+		return this.add(this._currentCond);
 	}
 
-	elseif( boolNode, method ) {
-
-		const methodNode = new ShaderNode( method );
-		const ifNode = cond( boolNode, methodNode );
+	elseif(boolNode, method) {
+		const methodNode = new ShaderNode(method);
+		const ifNode = cond(boolNode, methodNode);
 
 		this._currentCond.elseNode = ifNode;
 		this._currentCond = ifNode;
 
 		return this;
-
 	}
 
-	else( method ) {
-
-		this._currentCond.elseNode = new ShaderNode( method );
+	else(method) {
+		this._currentCond.elseNode = new ShaderNode(method);
 
 		return this;
-
 	}
 
-	build( builder, ...params ) {
-
+	build(builder, ...params) {
 		const previousStack = getCurrentStack();
 
-		setCurrentStack( this );
+		setCurrentStack(this);
 
-		for ( const node of this.nodes ) {
-
-			node.build( builder, 'void' );
-
+		for (const node of this.nodes) {
+			node.build(builder, "void");
 		}
 
-		setCurrentStack( previousStack );
+		setCurrentStack(previousStack);
 
-		return this.outputNode ? this.outputNode.build( builder, ...params ) : super.build( builder, ...params );
-
+		return this.outputNode
+			? this.outputNode.build(builder, ...params)
+			: super.build(builder, ...params);
 	}
-
 }
 
 export default StackNode;
 
-export const stack = nodeProxy( StackNode );
+export const stack = nodeProxy(StackNode);
 
-addNodeClass( 'StackNode', StackNode );
+addNodeClass("StackNode", StackNode);

@@ -1,35 +1,29 @@
-import Node, { addNodeClass } from '../core/Node.js';
-import { cameraViewMatrix } from './CameraNode.js';
-import { transformedNormalView } from './NormalNode.js';
-import { positionViewDirection } from './PositionNode.js';
-import { nodeImmutable } from '../shadernode/ShaderNode.js';
+import Node, { addNodeClass } from "../core/Node.js";
+import { cameraViewMatrix } from "./CameraNode.js";
+import { transformedNormalView } from "./NormalNode.js";
+import { positionViewDirection } from "./PositionNode.js";
+import { nodeImmutable } from "../shadernode/ShaderNode.js";
 
 class ReflectVectorNode extends Node {
-
 	constructor() {
-
-		super( 'vec3' );
-
+		super("vec3");
 	}
 
-	getHash( /*builder*/ ) {
-
-		return 'reflectVector';
-
+	getHash(/*builder*/) {
+		return "reflectVector";
 	}
 
 	setup() {
+		const reflectView = positionViewDirection
+			.negate()
+			.reflect(transformedNormalView);
 
-		const reflectView = positionViewDirection.negate().reflect( transformedNormalView );
-
-		return reflectView.transformDirection( cameraViewMatrix );
-
+		return reflectView.transformDirection(cameraViewMatrix);
 	}
-
 }
 
 export default ReflectVectorNode;
 
-export const reflectVector = nodeImmutable( ReflectVectorNode );
+export const reflectVector = nodeImmutable(ReflectVectorNode);
 
-addNodeClass( 'ReflectVectorNode', ReflectVectorNode );
+addNodeClass("ReflectVectorNode", ReflectVectorNode);

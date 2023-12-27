@@ -1,53 +1,42 @@
 /* global QUnit */
 
-import { PolarGridHelper } from '../../../../src/helpers/PolarGridHelper.js';
+import { PolarGridHelper } from "../../../../src/helpers/PolarGridHelper.js";
 
-import { LineSegments } from '../../../../src/objects/LineSegments.js';
+import { LineSegments } from "../../../../src/objects/LineSegments.js";
 
-export default QUnit.module( 'Helpers', () => {
-
-	QUnit.module( 'PolarGridHelper', () => {
-
+export default QUnit.module("Helpers", () => {
+	QUnit.module("PolarGridHelper", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			const object = new PolarGridHelper();
 			assert.strictEqual(
-				object instanceof LineSegments, true,
-				'PolarGridHelper extends from LineSegments'
+				object instanceof LineSegments,
+				true,
+				"PolarGridHelper extends from LineSegments"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const object = new PolarGridHelper();
-			assert.ok( object, 'Can instantiate a PolarGridHelper.' );
-
-		} );
+			assert.ok(object, "Can instantiate a PolarGridHelper.");
+		});
 
 		// PROPERTIES
-		QUnit.test( 'type', ( assert ) => {
-
+		QUnit.test("type", (assert) => {
 			const object = new PolarGridHelper();
 			assert.ok(
-				object.type === 'PolarGridHelper',
-				'PolarGridHelper.type should be PolarGridHelper'
+				object.type === "PolarGridHelper",
+				"PolarGridHelper.type should be PolarGridHelper"
 			);
-
-		} );
+		});
 
 		// PUBLIC
-		QUnit.test( 'dispose', ( assert ) => {
-
-			assert.expect( 0 );
+		QUnit.test("dispose", (assert) => {
+			assert.expect(0);
 
 			const object = new PolarGridHelper();
 			object.dispose();
-
-		} );
-
-	} );
-
-} );
+		});
+	});
+});

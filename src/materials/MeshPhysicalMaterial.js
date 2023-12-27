@@ -1,24 +1,20 @@
-import { Vector2 } from '../math/Vector2.js';
-import { MeshStandardMaterial } from './MeshStandardMaterial.js';
-import { Color } from '../math/Color.js';
-import * as MathUtils from '../math/MathUtils.js';
+import { Vector2 } from "../math/Vector2.js";
+import { MeshStandardMaterial } from "./MeshStandardMaterial.js";
+import { Color } from "../math/Color.js";
+import * as MathUtils from "../math/MathUtils.js";
 
 class MeshPhysicalMaterial extends MeshStandardMaterial {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.isMeshPhysicalMaterial = true;
 
 		this.defines = {
-
-			'STANDARD': '',
-			'PHYSICAL': ''
-
+			STANDARD: "",
+			PHYSICAL: "",
 		};
 
-		this.type = 'MeshPhysicalMaterial';
+		this.type = "MeshPhysicalMaterial";
 
 		this.anisotropyRotation = 0;
 		this.anisotropyMap = null;
@@ -26,30 +22,26 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this.clearcoatMap = null;
 		this.clearcoatRoughness = 0.0;
 		this.clearcoatRoughnessMap = null;
-		this.clearcoatNormalScale = new Vector2( 1, 1 );
+		this.clearcoatNormalScale = new Vector2(1, 1);
 		this.clearcoatNormalMap = null;
 
 		this.ior = 1.5;
 
-		Object.defineProperty( this, 'reflectivity', {
+		Object.defineProperty(this, "reflectivity", {
 			get: function () {
-
-				return ( MathUtils.clamp( 2.5 * ( this.ior - 1 ) / ( this.ior + 1 ), 0, 1 ) );
-
+				return MathUtils.clamp((2.5 * (this.ior - 1)) / (this.ior + 1), 0, 1);
 			},
-			set: function ( reflectivity ) {
-
-				this.ior = ( 1 + 0.4 * reflectivity ) / ( 1 - 0.4 * reflectivity );
-
-			}
-		} );
+			set: function (reflectivity) {
+				this.ior = (1 + 0.4 * reflectivity) / (1 - 0.4 * reflectivity);
+			},
+		});
 
 		this.iridescenceMap = null;
 		this.iridescenceIOR = 1.3;
-		this.iridescenceThicknessRange = [ 100, 400 ];
+		this.iridescenceThicknessRange = [100, 400];
 		this.iridescenceThicknessMap = null;
 
-		this.sheenColor = new Color( 0x000000 );
+		this.sheenColor = new Color(0x000000);
 		this.sheenColorMap = null;
 		this.sheenRoughness = 1.0;
 		this.sheenRoughnessMap = null;
@@ -59,11 +51,11 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this.thickness = 0;
 		this.thicknessMap = null;
 		this.attenuationDistance = Infinity;
-		this.attenuationColor = new Color( 1, 1, 1 );
+		this.attenuationColor = new Color(1, 1, 1);
 
 		this.specularIntensity = 1.0;
 		this.specularIntensityMap = null;
-		this.specularColor = new Color( 1, 1, 1 );
+		this.specularColor = new Color(1, 1, 1);
 		this.specularColorMap = null;
 
 		this._anisotropy = 0;
@@ -72,109 +64,75 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this._sheen = 0.0;
 		this._transmission = 0;
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
 
 	get anisotropy() {
-
 		return this._anisotropy;
-
 	}
 
-	set anisotropy( value ) {
-
-		if ( this._anisotropy > 0 !== value > 0 ) {
-
-			this.version ++;
-
+	set anisotropy(value) {
+		if (this._anisotropy > 0 !== value > 0) {
+			this.version++;
 		}
 
 		this._anisotropy = value;
-
 	}
 
 	get clearcoat() {
-
 		return this._clearcoat;
-
 	}
 
-	set clearcoat( value ) {
-
-		if ( this._clearcoat > 0 !== value > 0 ) {
-
-			this.version ++;
-
+	set clearcoat(value) {
+		if (this._clearcoat > 0 !== value > 0) {
+			this.version++;
 		}
 
 		this._clearcoat = value;
-
 	}
 
 	get iridescence() {
-
 		return this._iridescence;
-
 	}
 
-	set iridescence( value ) {
-
-		if ( this._iridescence > 0 !== value > 0 ) {
-
-			this.version ++;
-
+	set iridescence(value) {
+		if (this._iridescence > 0 !== value > 0) {
+			this.version++;
 		}
 
 		this._iridescence = value;
-
 	}
 
 	get sheen() {
-
 		return this._sheen;
-
 	}
 
-	set sheen( value ) {
-
-		if ( this._sheen > 0 !== value > 0 ) {
-
-			this.version ++;
-
+	set sheen(value) {
+		if (this._sheen > 0 !== value > 0) {
+			this.version++;
 		}
 
 		this._sheen = value;
-
 	}
 
 	get transmission() {
-
 		return this._transmission;
-
 	}
 
-	set transmission( value ) {
-
-		if ( this._transmission > 0 !== value > 0 ) {
-
-			this.version ++;
-
+	set transmission(value) {
+		if (this._transmission > 0 !== value > 0) {
+			this.version++;
 		}
 
 		this._transmission = value;
-
 	}
 
-	copy( source ) {
-
-		super.copy( source );
+	copy(source) {
+		super.copy(source);
 
 		this.defines = {
-
-			'STANDARD': '',
-			'PHYSICAL': ''
-
+			STANDARD: "",
+			PHYSICAL: "",
 		};
 
 		this.anisotropy = source.anisotropy;
@@ -186,18 +144,18 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this.clearcoatRoughness = source.clearcoatRoughness;
 		this.clearcoatRoughnessMap = source.clearcoatRoughnessMap;
 		this.clearcoatNormalMap = source.clearcoatNormalMap;
-		this.clearcoatNormalScale.copy( source.clearcoatNormalScale );
+		this.clearcoatNormalScale.copy(source.clearcoatNormalScale);
 
 		this.ior = source.ior;
 
 		this.iridescence = source.iridescence;
 		this.iridescenceMap = source.iridescenceMap;
 		this.iridescenceIOR = source.iridescenceIOR;
-		this.iridescenceThicknessRange = [ ...source.iridescenceThicknessRange ];
+		this.iridescenceThicknessRange = [...source.iridescenceThicknessRange];
 		this.iridescenceThicknessMap = source.iridescenceThicknessMap;
 
 		this.sheen = source.sheen;
-		this.sheenColor.copy( source.sheenColor );
+		this.sheenColor.copy(source.sheenColor);
 		this.sheenColorMap = source.sheenColorMap;
 		this.sheenRoughness = source.sheenRoughness;
 		this.sheenRoughnessMap = source.sheenRoughnessMap;
@@ -208,17 +166,15 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		this.thickness = source.thickness;
 		this.thicknessMap = source.thicknessMap;
 		this.attenuationDistance = source.attenuationDistance;
-		this.attenuationColor.copy( source.attenuationColor );
+		this.attenuationColor.copy(source.attenuationColor);
 
 		this.specularIntensity = source.specularIntensity;
 		this.specularIntensityMap = source.specularIntensityMap;
-		this.specularColor.copy( source.specularColor );
+		this.specularColor.copy(source.specularColor);
 		this.specularColorMap = source.specularColorMap;
 
 		return this;
-
 	}
-
 }
 
 export { MeshPhysicalMaterial };

@@ -1,7 +1,7 @@
 // used in report-size.yml
-import { formatBytes } from './formatBytes.js';
+import { formatBytes } from "./formatBytes.js";
 
-const n = Number( process.argv[ 2 ] );
-const formatted = formatBytes( n );
+const n = Number(process.argv[2]);
+const formatted = formatBytes(n);
 
-console.log( formatted );
+console.log(formatted);

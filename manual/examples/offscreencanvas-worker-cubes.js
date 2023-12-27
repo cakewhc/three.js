@@ -1,10 +1,8 @@
-import { init, state } from './shared-cubes.js';
+import { init, state } from "./shared-cubes.js";
 
-function size( data ) {
-
+function size(data) {
 	state.width = data.width;
 	state.height = data.height;
-
 }
 
 const handlers = {
@@ -12,15 +10,11 @@ const handlers = {
 	size,
 };
 
-self.onmessage = function ( e ) {
-
-	const fn = handlers[ e.data.type ];
-	if ( typeof fn !== 'function' ) {
-
-		throw new Error( 'no handler for type: ' + e.data.type );
-
+self.onmessage = function (e) {
+	const fn = handlers[e.data.type];
+	if (typeof fn !== "function") {
+		throw new Error("no handler for type: " + e.data.type);
 	}
 
-	fn( e.data );
-
+	fn(e.data);
 };

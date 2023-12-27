@@ -1,18 +1,16 @@
-import { Material } from './Material.js';
-import { MultiplyOperation } from '../constants.js';
-import { Color } from '../math/Color.js';
+import { Material } from "./Material.js";
+import { MultiplyOperation } from "../constants.js";
+import { Color } from "../math/Color.js";
 
 class MeshBasicMaterial extends Material {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.isMeshBasicMaterial = true;
 
-		this.type = 'MeshBasicMaterial';
+		this.type = "MeshBasicMaterial";
 
-		this.color = new Color( 0xffffff ); // emissive
+		this.color = new Color(0xffffff); // emissive
 
 		this.map = null;
 
@@ -33,20 +31,18 @@ class MeshBasicMaterial extends Material {
 
 		this.wireframe = false;
 		this.wireframeLinewidth = 1;
-		this.wireframeLinecap = 'round';
-		this.wireframeLinejoin = 'round';
+		this.wireframeLinecap = "round";
+		this.wireframeLinejoin = "round";
 
 		this.fog = true;
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
 
-	copy( source ) {
+	copy(source) {
+		super.copy(source);
 
-		super.copy( source );
-
-		this.color.copy( source.color );
+		this.color.copy(source.color);
 
 		this.map = source.map;
 
@@ -73,9 +69,7 @@ class MeshBasicMaterial extends Material {
 		this.fog = source.fog;
 
 		return this;
-
 	}
-
 }
 
 export { MeshBasicMaterial };

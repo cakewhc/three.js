@@ -1,12 +1,10 @@
-import DataMap from './DataMap.js';
-import RenderPipeline from './RenderPipeline.js';
-import ComputePipeline from './ComputePipeline.js';
-import ProgrammableStage from './ProgrammableStage.js';
+import DataMap from "./DataMap.js";
+import RenderPipeline from "./RenderPipeline.js";
+import ComputePipeline from "./ComputePipeline.js";
+import ProgrammableStage from "./ProgrammableStage.js";
 
 class Pipelines extends DataMap {
-
-	constructor( backend, nodes ) {
-
+	constructor(backend, nodes) {
 		super();
 
 		this.backend = backend;
@@ -18,93 +16,88 @@ class Pipelines extends DataMap {
 		this.programs = {
 			vertex: new Map(),
 			fragment: new Map(),
-			compute: new Map()
+			compute: new Map(),
 		};
-
 	}
 
-	getForCompute( computeNode, bindings ) {
-
+	getForCompute(computeNode, bindings) {
 		const { backend } = this;
 
-		const data = this.get( computeNode );
+		const data = this.get(computeNode);
 
-		if ( this._needsComputeUpdate( computeNode ) ) {
-
+		if (this._needsComputeUpdate(computeNode)) {
 			const previousPipeline = data.pipeline;
 
-			if ( previousPipeline ) {
-
-				previousPipeline.usedTimes --;
-				previousPipeline.computeProgram.usedTimes --;
-
+			if (previousPipeline) {
+				previousPipeline.usedTimes--;
+				previousPipeline.computeProgram.usedTimes--;
 			}
 
 			// get shader
 
-			const nodeBuilder = this.nodes.getForCompute( computeNode );
+			const nodeBuilder = this.nodes.getForCompute(computeNode);
 
 			// programmable stage
 
-			let stageCompute = this.programs.compute.get( nodeBuilder.computeShader );
+			let stageCompute = this.programs.compute.get(nodeBuilder.computeShader);
 
-			if ( stageCompute === undefined ) {
+			if (stageCompute === undefined) {
+				if (previousPipeline && previousPipeline.computeProgram.usedTimes === 0)
+					this._releaseProgram(previousPipeline.computeProgram);
 
-				if ( previousPipeline && previousPipeline.computeProgram.usedTimes === 0 ) this._releaseProgram( previousPipeline.computeProgram );
+				stageCompute = new ProgrammableStage(
+					nodeBuilder.computeShader,
+					"compute"
+				);
+				this.programs.compute.set(nodeBuilder.computeShader, stageCompute);
 
-				stageCompute = new ProgrammableStage( nodeBuilder.computeShader, 'compute' );
-				this.programs.compute.set( nodeBuilder.computeShader, stageCompute );
-
-				backend.createProgram( stageCompute );
-
+				backend.createProgram(stageCompute);
 			}
 
 			// determine compute pipeline
 
-			const cacheKey = this._getComputeCacheKey( computeNode, stageCompute );
+			const cacheKey = this._getComputeCacheKey(computeNode, stageCompute);
 
-			let pipeline = this.caches.get( cacheKey );
+			let pipeline = this.caches.get(cacheKey);
 
-			if ( pipeline === undefined ) {
+			if (pipeline === undefined) {
+				if (previousPipeline && previousPipeline.usedTimes === 0)
+					this._releasePipeline(computeNode);
 
-				if ( previousPipeline && previousPipeline.usedTimes === 0 ) this._releasePipeline( computeNode );
-
-				pipeline = this._getComputePipeline( computeNode, stageCompute, cacheKey, bindings );
-
+				pipeline = this._getComputePipeline(
+					computeNode,
+					stageCompute,
+					cacheKey,
+					bindings
+				);
 			}
 
 			// keep track of all used times
 
-			pipeline.usedTimes ++;
-			stageCompute.usedTimes ++;
+			pipeline.usedTimes++;
+			stageCompute.usedTimes++;
 
 			//
 
 			data.version = computeNode.version;
 			data.pipeline = pipeline;
-
 		}
 
 		return data.pipeline;
-
 	}
 
-	getForRender( renderObject ) {
-
+	getForRender(renderObject) {
 		const { backend } = this;
 
-		const data = this.get( renderObject );
+		const data = this.get(renderObject);
 
-		if ( this._needsRenderUpdate( renderObject ) ) {
-
+		if (this._needsRenderUpdate(renderObject)) {
 			const previousPipeline = data.pipeline;
 
-			if ( previousPipeline ) {
-
-				previousPipeline.usedTimes --;
-				previousPipeline.vertexProgram.usedTimes --;
-				previousPipeline.fragmentProgram.usedTimes --;
-
+			if (previousPipeline) {
+				previousPipeline.usedTimes--;
+				previousPipeline.vertexProgram.usedTimes--;
+				previousPipeline.fragmentProgram.usedTimes--;
 			}
 
 			// get shader
@@ -113,210 +106,207 @@ class Pipelines extends DataMap {
 
 			// programmable stages
 
-			let stageVertex = this.programs.vertex.get( nodeBuilderState.vertexShader );
+			let stageVertex = this.programs.vertex.get(nodeBuilderState.vertexShader);
 
-			if ( stageVertex === undefined ) {
+			if (stageVertex === undefined) {
+				if (previousPipeline && previousPipeline.vertexProgram.usedTimes === 0)
+					this._releaseProgram(previousPipeline.vertexProgram);
 
-				if ( previousPipeline && previousPipeline.vertexProgram.usedTimes === 0 ) this._releaseProgram( previousPipeline.vertexProgram );
+				stageVertex = new ProgrammableStage(
+					nodeBuilderState.vertexShader,
+					"vertex"
+				);
+				this.programs.vertex.set(nodeBuilderState.vertexShader, stageVertex);
 
-				stageVertex = new ProgrammableStage( nodeBuilderState.vertexShader, 'vertex' );
-				this.programs.vertex.set( nodeBuilderState.vertexShader, stageVertex );
-
-				backend.createProgram( stageVertex );
-
+				backend.createProgram(stageVertex);
 			}
 
-			let stageFragment = this.programs.fragment.get( nodeBuilderState.fragmentShader );
+			let stageFragment = this.programs.fragment.get(
+				nodeBuilderState.fragmentShader
+			);
 
-			if ( stageFragment === undefined ) {
+			if (stageFragment === undefined) {
+				if (
+					previousPipeline &&
+					previousPipeline.fragmentProgram.usedTimes === 0
+				)
+					this._releaseProgram(previousPipeline.fragmentProgram);
 
-				if ( previousPipeline && previousPipeline.fragmentProgram.usedTimes === 0 ) this._releaseProgram( previousPipeline.fragmentProgram );
+				stageFragment = new ProgrammableStage(
+					nodeBuilderState.fragmentShader,
+					"fragment"
+				);
+				this.programs.fragment.set(
+					nodeBuilderState.fragmentShader,
+					stageFragment
+				);
 
-				stageFragment = new ProgrammableStage( nodeBuilderState.fragmentShader, 'fragment' );
-				this.programs.fragment.set( nodeBuilderState.fragmentShader, stageFragment );
-
-				backend.createProgram( stageFragment );
-
+				backend.createProgram(stageFragment);
 			}
 
 			// determine render pipeline
 
-			const cacheKey = this._getRenderCacheKey( renderObject, stageVertex, stageFragment );
+			const cacheKey = this._getRenderCacheKey(
+				renderObject,
+				stageVertex,
+				stageFragment
+			);
 
-			let pipeline = this.caches.get( cacheKey );
+			let pipeline = this.caches.get(cacheKey);
 
-			if ( pipeline === undefined ) {
+			if (pipeline === undefined) {
+				if (previousPipeline && previousPipeline.usedTimes === 0)
+					this._releasePipeline(previousPipeline);
 
-				if ( previousPipeline && previousPipeline.usedTimes === 0 ) this._releasePipeline( previousPipeline );
-
-				pipeline = this._getRenderPipeline( renderObject, stageVertex, stageFragment, cacheKey );
-
+				pipeline = this._getRenderPipeline(
+					renderObject,
+					stageVertex,
+					stageFragment,
+					cacheKey
+				);
 			} else {
-
 				renderObject.pipeline = pipeline;
-
 			}
 
 			// keep track of all used times
 
-			pipeline.usedTimes ++;
-			stageVertex.usedTimes ++;
-			stageFragment.usedTimes ++;
+			pipeline.usedTimes++;
+			stageVertex.usedTimes++;
+			stageFragment.usedTimes++;
 
 			//
 
 			data.pipeline = pipeline;
-
 		}
 
 		return data.pipeline;
-
 	}
 
-	delete( object ) {
+	delete(object) {
+		const pipeline = this.get(object).pipeline;
 
-		const pipeline = this.get( object ).pipeline;
-
-		if ( pipeline ) {
-
+		if (pipeline) {
 			// pipeline
 
-			pipeline.usedTimes --;
+			pipeline.usedTimes--;
 
-			if ( pipeline.usedTimes === 0 ) this._releasePipeline( pipeline );
+			if (pipeline.usedTimes === 0) this._releasePipeline(pipeline);
 
 			// programs
 
-			if ( pipeline.isComputePipeline ) {
+			if (pipeline.isComputePipeline) {
+				pipeline.computeProgram.usedTimes--;
 
-				pipeline.computeProgram.usedTimes --;
-
-				if ( pipeline.computeProgram.usedTimes === 0 ) this._releaseProgram( pipeline.computeProgram );
-
+				if (pipeline.computeProgram.usedTimes === 0)
+					this._releaseProgram(pipeline.computeProgram);
 			} else {
+				pipeline.fragmentProgram.usedTimes--;
+				pipeline.vertexProgram.usedTimes--;
 
-				pipeline.fragmentProgram.usedTimes --;
-				pipeline.vertexProgram.usedTimes --;
-
-				if ( pipeline.vertexProgram.usedTimes === 0 ) this._releaseProgram( pipeline.vertexProgram );
-				if ( pipeline.fragmentProgram.usedTimes === 0 ) this._releaseProgram( pipeline.fragmentProgram );
-
+				if (pipeline.vertexProgram.usedTimes === 0)
+					this._releaseProgram(pipeline.vertexProgram);
+				if (pipeline.fragmentProgram.usedTimes === 0)
+					this._releaseProgram(pipeline.fragmentProgram);
 			}
-
 		}
 
-		super.delete( object );
-
+		super.delete(object);
 	}
 
 	dispose() {
-
 		super.dispose();
 
 		this.caches = new Map();
 		this.programs = {
 			vertex: new Map(),
 			fragment: new Map(),
-			compute: new Map()
+			compute: new Map(),
 		};
-
 	}
 
-	updateForRender( renderObject ) {
-
-		this.getForRender( renderObject );
-
+	updateForRender(renderObject) {
+		this.getForRender(renderObject);
 	}
 
-	_getComputePipeline( computeNode, stageCompute, cacheKey, bindings ) {
-
+	_getComputePipeline(computeNode, stageCompute, cacheKey, bindings) {
 		// check for existing pipeline
 
-		cacheKey = cacheKey || this._getComputeCacheKey( computeNode, stageCompute );
+		cacheKey = cacheKey || this._getComputeCacheKey(computeNode, stageCompute);
 
-		let pipeline = this.caches.get( cacheKey );
+		let pipeline = this.caches.get(cacheKey);
 
-		if ( pipeline === undefined ) {
+		if (pipeline === undefined) {
+			pipeline = new ComputePipeline(cacheKey, stageCompute);
 
-			pipeline = new ComputePipeline( cacheKey, stageCompute );
+			this.caches.set(cacheKey, pipeline);
 
-			this.caches.set( cacheKey, pipeline );
-
-			this.backend.createComputePipeline( pipeline, bindings );
-
+			this.backend.createComputePipeline(pipeline, bindings);
 		}
 
 		return pipeline;
-
 	}
 
-	_getRenderPipeline( renderObject, stageVertex, stageFragment, cacheKey ) {
-
+	_getRenderPipeline(renderObject, stageVertex, stageFragment, cacheKey) {
 		// check for existing pipeline
 
-		cacheKey = cacheKey || this._getRenderCacheKey( renderObject, stageVertex, stageFragment );
+		cacheKey =
+			cacheKey ||
+			this._getRenderCacheKey(renderObject, stageVertex, stageFragment);
 
-		let pipeline = this.caches.get( cacheKey );
+		let pipeline = this.caches.get(cacheKey);
 
-		if ( pipeline === undefined ) {
+		if (pipeline === undefined) {
+			pipeline = new RenderPipeline(cacheKey, stageVertex, stageFragment);
 
-			pipeline = new RenderPipeline( cacheKey, stageVertex, stageFragment );
-
-			this.caches.set( cacheKey, pipeline );
+			this.caches.set(cacheKey, pipeline);
 
 			renderObject.pipeline = pipeline;
 
-			this.backend.createRenderPipeline( renderObject );
-
+			this.backend.createRenderPipeline(renderObject);
 		}
 
 		return pipeline;
-
 	}
 
-	_getComputeCacheKey( computeNode, stageCompute ) {
-
-		return computeNode.id + ',' + stageCompute.id;
-
+	_getComputeCacheKey(computeNode, stageCompute) {
+		return computeNode.id + "," + stageCompute.id;
 	}
 
-	_getRenderCacheKey( renderObject, stageVertex, stageFragment ) {
-
-		return stageVertex.id + ',' + stageFragment.id + ',' + this.backend.getRenderCacheKey( renderObject );
-
+	_getRenderCacheKey(renderObject, stageVertex, stageFragment) {
+		return (
+			stageVertex.id +
+			"," +
+			stageFragment.id +
+			"," +
+			this.backend.getRenderCacheKey(renderObject)
+		);
 	}
 
-	_releasePipeline( pipeline ) {
-
-		this.caches.delete( pipeline.cacheKey );
-
+	_releasePipeline(pipeline) {
+		this.caches.delete(pipeline.cacheKey);
 	}
 
-	_releaseProgram( program ) {
-
+	_releaseProgram(program) {
 		const code = program.code;
 		const stage = program.stage;
 
-		this.programs[ stage ].delete( code );
-
+		this.programs[stage].delete(code);
 	}
 
-	_needsComputeUpdate( computeNode ) {
-
-		const data = this.get( computeNode );
+	_needsComputeUpdate(computeNode) {
+		const data = this.get(computeNode);
 
 		return data.pipeline === undefined || data.version !== computeNode.version;
-
 	}
 
-	_needsRenderUpdate( renderObject ) {
+	_needsRenderUpdate(renderObject) {
+		const data = this.get(renderObject);
 
-		const data = this.get( renderObject );
-
-		return data.pipeline === undefined || this.backend.needsRenderUpdate( renderObject );
-
+		return (
+			data.pipeline === undefined ||
+			this.backend.needsRenderUpdate(renderObject)
+		);
 	}
-
 }
 
 export default Pipelines;

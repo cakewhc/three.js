@@ -1,17 +1,14 @@
 /* global QUnit */
 
-import { ImageBitmapLoader } from '../../../../src/loaders/ImageBitmapLoader.js';
+import { ImageBitmapLoader } from "../../../../src/loaders/ImageBitmapLoader.js";
 
-import { Loader } from '../../../../src/loaders/Loader.js';
-import { CONSOLE_LEVEL } from '../../utils/console-wrapper.js';
+import { Loader } from "../../../../src/loaders/Loader.js";
+import { CONSOLE_LEVEL } from "../../utils/console-wrapper.js";
 
-export default QUnit.module( 'Loaders', () => {
-
-	QUnit.module( 'ImageBitmapLoader', () => {
-
+export default QUnit.module("Loaders", () => {
+	QUnit.module("ImageBitmapLoader", () => {
 		// INHERITANCE
-		QUnit.test( 'Extending', ( assert ) => {
-
+		QUnit.test("Extending", (assert) => {
 			// surpress the following console message when testing
 			// THREE.ImageBitmapLoader: createImageBitmap() not supported.
 
@@ -20,15 +17,14 @@ export default QUnit.module( 'Loaders', () => {
 			console.level = CONSOLE_LEVEL.DEFAULT;
 
 			assert.strictEqual(
-				object instanceof Loader, true,
-				'ImageBitmapLoader extends from Loader'
+				object instanceof Loader,
+				true,
+				"ImageBitmapLoader extends from Loader"
 			);
-
-		} );
+		});
 
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			// surpress the following console message when testing
 			// THREE.ImageBitmapLoader: createImageBitmap() not supported.
 
@@ -36,13 +32,11 @@ export default QUnit.module( 'Loaders', () => {
 			const object = new ImageBitmapLoader();
 			console.level = CONSOLE_LEVEL.DEFAULT;
 
-			assert.ok( object, 'Can instantiate an ImageBitmapLoader.' );
-
-		} );
+			assert.ok(object, "Can instantiate an ImageBitmapLoader.");
+		});
 
 		// PROPERTIES
-		QUnit.test( 'options', ( assert ) => {
-
+		QUnit.test("options", (assert) => {
 			// surpress the following console message when testing in node
 			// THREE.ImageBitmapLoader: createImageBitmap() not supported.
 
@@ -50,14 +44,12 @@ export default QUnit.module( 'Loaders', () => {
 			const actual = new ImageBitmapLoader().options;
 			console.level = CONSOLE_LEVEL.DEFAULT;
 
-			const expected = { premultiplyAlpha: 'none' };
-			assert.deepEqual( actual, expected, 'ImageBitmapLoader defines options.' );
-
-		} );
+			const expected = { premultiplyAlpha: "none" };
+			assert.deepEqual(actual, expected, "ImageBitmapLoader defines options.");
+		});
 
 		// PUBLIC
-		QUnit.test( 'isImageBitmapLoader', ( assert ) => {
-
+		QUnit.test("isImageBitmapLoader", (assert) => {
 			// surpress the following console message when testing in node
 			// THREE.ImageBitmapLoader: createImageBitmap() not supported.
 
@@ -67,25 +59,18 @@ export default QUnit.module( 'Loaders', () => {
 
 			assert.ok(
 				object.isImageBitmapLoader,
-				'ImageBitmapLoader.isImageBitmapLoader should be true'
+				"ImageBitmapLoader.isImageBitmapLoader should be true"
 			);
+		});
 
-		} );
-
-		QUnit.todo( 'setOptions', ( assert ) => {
-
+		QUnit.todo("setOptions", (assert) => {
 			// setOptions( options )
-			assert.ok( false, 'everything\'s gonna be alright' );
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		} );
-
-		QUnit.todo( 'load', ( assert ) => {
-
+		QUnit.todo("load", (assert) => {
 			// load( url, onLoad, onProgress, onError )
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-	} );
-
-} );
+			assert.ok(false, "everything's gonna be alright");
+		});
+	});
+});

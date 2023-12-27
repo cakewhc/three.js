@@ -1,4 +1,3 @@
-
 /**
  * `PackedPhongMaterial` inherited from THREE.MeshPhongMaterial
  *
@@ -9,31 +8,27 @@ import {
 	ShaderChunk,
 	ShaderLib,
 	UniformsUtils,
-} from 'three';
+} from "three";
 
 class PackedPhongMaterial extends MeshPhongMaterial {
-
-	constructor( parameters ) {
-
+	constructor(parameters) {
 		super();
 
 		this.defines = {};
-		this.type = 'PackedPhongMaterial';
-		this.uniforms = UniformsUtils.merge( [
-
+		this.type = "PackedPhongMaterial";
+		this.uniforms = UniformsUtils.merge([
 			ShaderLib.phong.uniforms,
 
 			{
 				quantizeMatPos: { value: null },
-				quantizeMatUV: { value: null }
-			}
-
-		] );
+				quantizeMatUV: { value: null },
+			},
+		]);
 
 		this.vertexShader = [
-			'#define PHONG',
+			"#define PHONG",
 
-			'varying vec3 vViewPosition;',
+			"varying vec3 vViewPosition;",
 
 			ShaderChunk.common,
 			ShaderChunk.uv_pars_vertex,
@@ -111,7 +106,7 @@ class PackedPhongMaterial extends MeshPhongMaterial {
 					#endif
 				#endif`,
 
-			'void main() {',
+			"void main() {",
 
 			ShaderChunk.uv_vertex,
 
@@ -156,23 +151,21 @@ class PackedPhongMaterial extends MeshPhongMaterial {
 			ShaderChunk.logdepthbuf_vertex,
 			ShaderChunk.clipping_planes_vertex,
 
-			'vViewPosition = - mvPosition.xyz;',
+			"vViewPosition = - mvPosition.xyz;",
 
 			ShaderChunk.worldpos_vertex,
 			ShaderChunk.envmap_vertex,
 			ShaderChunk.shadowmap_vertex,
 			ShaderChunk.fog_vertex,
 
-			'}',
-		].join( '\n' );
+			"}",
+		].join("\n");
 
 		// Use the original MeshPhongMaterial's fragmentShader.
 		this.fragmentShader = ShaderLib.phong.fragmentShader;
 
-		this.setValues( parameters );
-
+		this.setValues(parameters);
 	}
-
 }
 
 export { PackedPhongMaterial };

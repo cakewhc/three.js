@@ -1,61 +1,43 @@
 /* global QUnit */
 
-import { StereoCamera } from '../../../../src/cameras/StereoCamera.js';
+import { StereoCamera } from "../../../../src/cameras/StereoCamera.js";
 
-export default QUnit.module( 'Cameras', () => {
-
-	QUnit.module( 'StereoCamera', () => {
-
+export default QUnit.module("Cameras", () => {
+	QUnit.module("StereoCamera", () => {
 		// INSTANCING
-		QUnit.test( 'Instancing', ( assert ) => {
-
+		QUnit.test("Instancing", (assert) => {
 			const object = new StereoCamera();
-			assert.ok( object, 'Can instantiate a StereoCamera.' );
-
-		} );
+			assert.ok(object, "Can instantiate a StereoCamera.");
+		});
 
 		// PROPERTIES
-		QUnit.test( 'type', ( assert ) => {
-
+		QUnit.test("type", (assert) => {
 			const object = new StereoCamera();
 			assert.ok(
-				object.type === 'StereoCamera',
-				'StereoCamera.type should be StereoCamera'
+				object.type === "StereoCamera",
+				"StereoCamera.type should be StereoCamera"
 			);
+		});
 
-		} );
+		QUnit.todo("aspect", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		QUnit.todo( 'aspect', ( assert ) => {
+		QUnit.todo("eyeSep", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-			assert.ok( false, 'everything\'s gonna be alright' );
+		QUnit.todo("cameraL", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
-		} );
-
-		QUnit.todo( 'eyeSep', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-		QUnit.todo( 'cameraL', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-		QUnit.todo( 'cameraR', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
+		QUnit.todo("cameraR", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
 
 		// PUBLIC
-		QUnit.todo( 'update', ( assert ) => {
-
-			assert.ok( false, 'everything\'s gonna be alright' );
-
-		} );
-
-	} );
-
-} );
+		QUnit.todo("update", (assert) => {
+			assert.ok(false, "everything's gonna be alright");
+		});
+	});
+});

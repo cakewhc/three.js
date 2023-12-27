@@ -1,69 +1,55 @@
-import { EventDispatcher } from './EventDispatcher.js';
-import { StaticDrawUsage } from '../constants.js';
+import { EventDispatcher } from "./EventDispatcher.js";
+import { StaticDrawUsage } from "../constants.js";
 
 let _id = 0;
 
 class UniformsGroup extends EventDispatcher {
-
 	constructor() {
-
 		super();
 
 		this.isUniformsGroup = true;
 
-		Object.defineProperty( this, 'id', { value: _id ++ } );
+		Object.defineProperty(this, "id", { value: _id++ });
 
-		this.name = '';
+		this.name = "";
 
 		this.usage = StaticDrawUsage;
 		this.uniforms = [];
-
 	}
 
-	add( uniform ) {
-
-		this.uniforms.push( uniform );
+	add(uniform) {
+		this.uniforms.push(uniform);
 
 		return this;
-
 	}
 
-	remove( uniform ) {
+	remove(uniform) {
+		const index = this.uniforms.indexOf(uniform);
 
-		const index = this.uniforms.indexOf( uniform );
-
-		if ( index !== - 1 ) this.uniforms.splice( index, 1 );
+		if (index !== -1) this.uniforms.splice(index, 1);
 
 		return this;
-
 	}
 
-	setName( name ) {
-
+	setName(name) {
 		this.name = name;
 
 		return this;
-
 	}
 
-	setUsage( value ) {
-
+	setUsage(value) {
 		this.usage = value;
 
 		return this;
-
 	}
 
 	dispose() {
-
-		this.dispatchEvent( { type: 'dispose' } );
+		this.dispatchEvent({ type: "dispose" });
 
 		return this;
-
 	}
 
-	copy( source ) {
-
+	copy(source) {
 		this.name = source.name;
 		this.usage = source.usage;
 
@@ -71,28 +57,22 @@ class UniformsGroup extends EventDispatcher {
 
 		this.uniforms.length = 0;
 
-		for ( let i = 0, l = uniformsSource.length; i < l; i ++ ) {
+		for (let i = 0, l = uniformsSource.length; i < l; i++) {
+			const uniforms = Array.isArray(uniformsSource[i])
+				? uniformsSource[i]
+				: [uniformsSource[i]];
 
-			const uniforms = Array.isArray( uniformsSource[ i ] ) ? uniformsSource[ i ] : [ uniformsSource[ i ] ];
-
-			for ( let j = 0; j < uniforms.length; j ++ ) {
-
-				this.uniforms.push( uniforms[ j ].clone() );
-
+			for (let j = 0; j < uniforms.length; j++) {
+				this.uniforms.push(uniforms[j].clone());
 			}
-
 		}
 
 		return this;
-
 	}
 
 	clone() {
-
-		return new this.constructor().copy( this );
-
+		return new this.constructor().copy(this);
 	}
-
 }
 
 export { UniformsGroup };

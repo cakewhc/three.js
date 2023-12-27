@@ -1,6 +1,4 @@
-import {
-	Vector2
-} from 'three';
+import { Vector2 } from "three";
 
 /**
  * WebGL port of Subpixel Morphological Antialiasing (SMAA) v2.8
@@ -9,23 +7,18 @@ import {
  */
 
 const SMAAEdgesShader = {
-
-	name: 'SMAAEdgesShader',
+	name: "SMAAEdgesShader",
 
 	defines: {
-
-		'SMAA_THRESHOLD': '0.1'
-
+		SMAA_THRESHOLD: "0.1",
 	},
 
 	uniforms: {
-
-		'tDiffuse': { value: null },
-		'resolution': { value: new Vector2( 1 / 1024, 1 / 512 ) }
-
+		tDiffuse: { value: null },
+		resolution: { value: new Vector2(1 / 1024, 1 / 512) },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		uniform vec2 resolution;
 
@@ -48,7 +41,7 @@ const SMAAEdgesShader = {
 
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 
 		uniform sampler2D tDiffuse;
 
@@ -111,33 +104,27 @@ const SMAAEdgesShader = {
 
 			gl_FragColor = SMAAColorEdgeDetectionPS( vUv, vOffset, tDiffuse );
 
-		}`
-
+		}`,
 };
 
 const SMAAWeightsShader = {
-
-	name: 'SMAAWeightsShader',
+	name: "SMAAWeightsShader",
 
 	defines: {
-
-		'SMAA_MAX_SEARCH_STEPS': '8',
-		'SMAA_AREATEX_MAX_DISTANCE': '16',
-		'SMAA_AREATEX_PIXEL_SIZE': '( 1.0 / vec2( 160.0, 560.0 ) )',
-		'SMAA_AREATEX_SUBTEX_SIZE': '( 1.0 / 7.0 )'
-
+		SMAA_MAX_SEARCH_STEPS: "8",
+		SMAA_AREATEX_MAX_DISTANCE: "16",
+		SMAA_AREATEX_PIXEL_SIZE: "( 1.0 / vec2( 160.0, 560.0 ) )",
+		SMAA_AREATEX_SUBTEX_SIZE: "( 1.0 / 7.0 )",
 	},
 
 	uniforms: {
-
-		'tDiffuse': { value: null },
-		'tArea': { value: null },
-		'tSearch': { value: null },
-		'resolution': { value: new Vector2( 1 / 1024, 1 / 512 ) }
-
+		tDiffuse: { value: null },
+		tArea: { value: null },
+		tSearch: { value: null },
+		resolution: { value: new Vector2(1 / 1024, 1 / 512) },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		uniform vec2 resolution;
 
@@ -167,7 +154,7 @@ const SMAAWeightsShader = {
 
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 
 		#define SMAASampleLevelZeroOffset( tex, coord, offset ) texture2D( tex, coord + float( offset ) * resolution, 0.0 )
 
@@ -367,23 +354,19 @@ const SMAAWeightsShader = {
 
 			gl_FragColor = SMAABlendingWeightCalculationPS( vUv, vPixcoord, vOffset, tDiffuse, tArea, tSearch, ivec4( 0.0 ) );
 
-		}`
-
+		}`,
 };
 
 const SMAABlendShader = {
-
-	name: 'SMAABlendShader',
+	name: "SMAABlendShader",
 
 	uniforms: {
-
-		'tDiffuse': { value: null },
-		'tColor': { value: null },
-		'resolution': { value: new Vector2( 1 / 1024, 1 / 512 ) }
-
+		tDiffuse: { value: null },
+		tColor: { value: null },
+		resolution: { value: new Vector2(1 / 1024, 1 / 512) },
 	},
 
-	vertexShader: /* glsl */`
+	vertexShader: /* glsl */ `
 
 		uniform vec2 resolution;
 
@@ -405,7 +388,7 @@ const SMAABlendShader = {
 
 		}`,
 
-	fragmentShader: /* glsl */`
+	fragmentShader: /* glsl */ `
 
 		uniform sampler2D tDiffuse;
 		uniform sampler2D tColor;
@@ -459,8 +442,7 @@ const SMAABlendShader = {
 
 			gl_FragColor = SMAANeighborhoodBlendingPS( vUv, vOffset, tColor, tDiffuse );
 
-		}`
-
+		}`,
 };
 
 export { SMAAEdgesShader, SMAAWeightsShader, SMAABlendShader };

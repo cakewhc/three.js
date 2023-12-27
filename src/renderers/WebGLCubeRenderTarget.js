@@ -1,33 +1,51 @@
-import { BackSide, LinearFilter, LinearMipmapLinearFilter, NoBlending, NoColorSpace, SRGBColorSpace, sRGBEncoding } from '../constants.js';
-import { Mesh } from '../objects/Mesh.js';
-import { BoxGeometry } from '../geometries/BoxGeometry.js';
-import { ShaderMaterial } from '../materials/ShaderMaterial.js';
-import { cloneUniforms } from './shaders/UniformsUtils.js';
-import { WebGLRenderTarget } from './WebGLRenderTarget.js';
-import { CubeCamera } from '../cameras/CubeCamera.js';
-import { CubeTexture } from '../textures/CubeTexture.js';
-import { warnOnce } from '../utils.js';
+import {
+	BackSide,
+	LinearFilter,
+	LinearMipmapLinearFilter,
+	NoBlending,
+	NoColorSpace,
+	SRGBColorSpace,
+	sRGBEncoding,
+} from "../constants.js";
+import { Mesh } from "../objects/Mesh.js";
+import { BoxGeometry } from "../geometries/BoxGeometry.js";
+import { ShaderMaterial } from "../materials/ShaderMaterial.js";
+import { cloneUniforms } from "./shaders/UniformsUtils.js";
+import { WebGLRenderTarget } from "./WebGLRenderTarget.js";
+import { CubeCamera } from "../cameras/CubeCamera.js";
+import { CubeTexture } from "../textures/CubeTexture.js";
+import { warnOnce } from "../utils.js";
 
 class WebGLCubeRenderTarget extends WebGLRenderTarget {
-
-	constructor( size = 1, options = {} ) {
-
-		super( size, size, options );
+	constructor(size = 1, options = {}) {
+		super(size, size, options);
 
 		this.isWebGLCubeRenderTarget = true;
 
 		const image = { width: size, height: size, depth: 1 };
-		const images = [ image, image, image, image, image, image ];
+		const images = [image, image, image, image, image, image];
 
-		if ( options.encoding !== undefined ) {
-
+		if (options.encoding !== undefined) {
 			// @deprecated, r152
-			warnOnce( 'THREE.WebGLCubeRenderTarget: option.encoding has been replaced by option.colorSpace.' );
-			options.colorSpace = options.encoding === sRGBEncoding ? SRGBColorSpace : NoColorSpace;
-
+			warnOnce(
+				"THREE.WebGLCubeRenderTarget: option.encoding has been replaced by option.colorSpace."
+			);
+			options.colorSpace =
+				options.encoding === sRGBEncoding ? SRGBColorSpace : NoColorSpace;
 		}
 
-		this.texture = new CubeTexture( images, options.mapping, options.wrapS, options.wrapT, options.magFilter, options.minFilter, options.format, options.type, options.anisotropy, options.colorSpace );
+		this.texture = new CubeTexture(
+			images,
+			options.mapping,
+			options.wrapS,
+			options.wrapT,
+			options.magFilter,
+			options.minFilter,
+			options.format,
+			options.type,
+			options.anisotropy,
+			options.colorSpace
+		);
 
 		// By convention -- likely based on the RenderMan spec from the 1990's -- cube maps are specified by WebGL (and three.js)
 		// in a coordinate system in which positive-x is to the right when looking up the positive-z axis -- in other words,
@@ -39,13 +57,13 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 
 		this.texture.isRenderTargetTexture = true;
 
-		this.texture.generateMipmaps = options.generateMipmaps !== undefined ? options.generateMipmaps : false;
-		this.texture.minFilter = options.minFilter !== undefined ? options.minFilter : LinearFilter;
-
+		this.texture.generateMipmaps =
+			options.generateMipmaps !== undefined ? options.generateMipmaps : false;
+		this.texture.minFilter =
+			options.minFilter !== undefined ? options.minFilter : LinearFilter;
 	}
 
-	fromEquirectangularTexture( renderer, texture ) {
-
+	fromEquirectangularTexture(renderer, texture) {
 		this.texture.type = texture.type;
 		this.texture.colorSpace = texture.colorSpace;
 
@@ -54,12 +72,11 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 		this.texture.magFilter = texture.magFilter;
 
 		const shader = {
-
 			uniforms: {
 				tEquirect: { value: null },
 			},
 
-			vertexShader: /* glsl */`
+			vertexShader: /* glsl */ `
 
 				varying vec3 vWorldDirection;
 
@@ -79,7 +96,7 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 				}
 			`,
 
-			fragmentShader: /* glsl */`
+			fragmentShader: /* glsl */ `
 
 				uniform sampler2D tEquirect;
 
@@ -96,34 +113,33 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 					gl_FragColor = texture2D( tEquirect, sampleUV );
 
 				}
-			`
+			`,
 		};
 
-		const geometry = new BoxGeometry( 5, 5, 5 );
+		const geometry = new BoxGeometry(5, 5, 5);
 
-		const material = new ShaderMaterial( {
+		const material = new ShaderMaterial({
+			name: "CubemapFromEquirect",
 
-			name: 'CubemapFromEquirect',
-
-			uniforms: cloneUniforms( shader.uniforms ),
+			uniforms: cloneUniforms(shader.uniforms),
 			vertexShader: shader.vertexShader,
 			fragmentShader: shader.fragmentShader,
 			side: BackSide,
-			blending: NoBlending
-
-		} );
+			blending: NoBlending,
+		});
 
 		material.uniforms.tEquirect.value = texture;
 
-		const mesh = new Mesh( geometry, material );
+		const mesh = new Mesh(geometry, material);
 
 		const currentMinFilter = texture.minFilter;
 
 		// Avoid blurred poles
-		if ( texture.minFilter === LinearMipmapLinearFilter ) texture.minFilter = LinearFilter;
+		if (texture.minFilter === LinearMipmapLinearFilter)
+			texture.minFilter = LinearFilter;
 
-		const camera = new CubeCamera( 1, 10, this );
-		camera.update( renderer, mesh );
+		const camera = new CubeCamera(1, 10, this);
+		camera.update(renderer, mesh);
 
 		texture.minFilter = currentMinFilter;
 
@@ -131,25 +147,19 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 		mesh.material.dispose();
 
 		return this;
-
 	}
 
-	clear( renderer, color, depth, stencil ) {
-
+	clear(renderer, color, depth, stencil) {
 		const currentRenderTarget = renderer.getRenderTarget();
 
-		for ( let i = 0; i < 6; i ++ ) {
+		for (let i = 0; i < 6; i++) {
+			renderer.setRenderTarget(this, i);
 
-			renderer.setRenderTarget( this, i );
-
-			renderer.clear( color, depth, stencil );
-
+			renderer.clear(color, depth, stencil);
 		}
 
-		renderer.setRenderTarget( currentRenderTarget );
-
+		renderer.setRenderTarget(currentRenderTarget);
 	}
-
 }
 
 export { WebGLCubeRenderTarget };
